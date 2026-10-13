@@ -1,7 +1,7 @@
-import { Input } from './Input.js?v=0.5.0';
-import { Player } from './Player.js?v=0.5.0';
-import { World } from './World.js?v=0.5.0';
-import { Enemy } from './Enemy.js?v=0.5.0';
+import { Input } from './Input.js?v=0.5.1';
+import { Player } from './Player.js?v=0.5.1';
+import { World } from './World.js?v=0.5.1';
+import { Enemy } from './Enemy.js?v=0.5.1';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.reset();window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -14,7 +14,7 @@ export class Game {
  shoot(){const playerX=Math.round(this.width*.25);this.player.shoot();this.bullets.push({x:playerX+this.player.size+7,y:this.player.y+this.player.size*.5-3,width:14,height:6,speed:750});}
  resolveLanding(previousBottom){const x=Math.round(this.width*.25);const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of this.platforms){const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY)this.player.land(landingY);}
  update(dt){if(this.input.consumeJump())this.player.jump();if(this.input.consumeShoot())this.shoot();this.world.update(dt);this.spawnPlatforms();this.spawnEnemies();const previousBottom=this.player.y+this.player.size;this.player.update(dt);this.resolveLanding(previousBottom);const playerX=Math.round(this.width*.25);const playerBox={x:playerX,y:this.player.y,width:this.player.size,height:this.player.size};
- for(const enemy of this.enemies){if(!enemy.shooter)continue;const x=enemy.worldX-this.world.distance;enemy.fireTimer-=dt;if(x>playerX+enemy.size&&x<this.width+40&&enemy.fireTimer<=0){this.enemyBullets.push({x:x-12,y:this.groundY-enemy.surfaceOffset-enemy.size*.5-3,width:12,height:6,speed:235});enemy.fireTimer=2.8+Math.random()*1.6;}}
+ for(const enemy of this.enemies){if(!enemy.shooter)continue;const x=enemy.worldX-this.world.distance;enemy.fireTimer-=dt;if(x>playerX+enemy.size&&x<this.width+40&&enemy.fireTimer<=0){this.enemyBullets.push({x:x-12,y:this.groundY-enemy.surfaceOffset-enemy.size*.5-3,width:12,height:6,speed:430});enemy.fireTimer=2.8+Math.random()*1.6;}}
  const survivors=[];for(const bullet of this.bullets){const previousX=bullet.x;bullet.x+=bullet.speed*dt;let hit=null;let nearest=Infinity;for(const enemy of this.enemies){const box=enemy.box(enemy.worldX-this.world.distance,this.groundY);const swept={x:Math.min(previousX,bullet.x),y:bullet.y,width:bullet.width+Math.abs(bullet.x-previousX),height:bullet.height};if(intersects(swept,box)&&box.x<nearest){nearest=box.x;hit=enemy;}}if(hit){if(hit.hit()){this.enemies.splice(this.enemies.indexOf(hit),1);this.score++;document.getElementById('score').textContent=String(this.score);}}else if(bullet.x<this.width+20)survivors.push(bullet);}this.bullets=survivors;
  const hostile=[];for(const bullet of this.enemyBullets){const previousX=bullet.x;bullet.x-=bullet.speed*dt;const swept={x:bullet.x,y:bullet.y,width:bullet.width+previousX-bullet.x,height:bullet.height};if(intersects(swept,playerBox)){this.reset();return;}if(bullet.x+bullet.width>0)hostile.push(bullet);}this.enemyBullets=hostile;
  this.enemies=this.enemies.filter(e=>e.worldX-this.world.distance+e.size>0);for(const enemy of this.enemies){if(intersects(playerBox,enemy.box(enemy.worldX-this.world.distance,this.groundY))){this.reset();return;}}}
