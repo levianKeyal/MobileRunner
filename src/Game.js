@@ -1,6 +1,6 @@
-import { Input } from './Input.js';
-import { Player } from './Player.js';
-import { World } from './World.js';
+import { Input } from './Input.js?v=0.2.1';
+import { Player } from './Player.js?v=0.2.1';
+import { World } from './World.js?v=0.2.1';
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.player=new Player();this.world=new World();this.bullets=[];this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resize();window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
  resize(){const oldGround=this.groundY;this.width=window.innerWidth;this.height=window.innerHeight;this.groundY=Math.round(this.height*.74);const ratio=Math.min(window.devicePixelRatio||1,2);this.canvas.width=Math.round(this.width*ratio);this.canvas.height=Math.round(this.height*ratio);this.ctx.setTransform(ratio,0,0,ratio,0,0);if(!oldGround||this.player.grounded)this.player.reset(this.groundY);else this.player.y+=this.groundY-oldGround;}
