@@ -1,7 +1,7 @@
-import { Input } from './Input.js?v=0.5.2';
-import { Player } from './Player.js?v=0.5.2';
-import { World } from './World.js?v=0.5.2';
-import { Enemy } from './Enemy.js?v=0.5.2';
+import { Input } from './Input.js?v=0.5.3';
+import { Player } from './Player.js?v=0.5.3';
+import { World } from './World.js?v=0.5.3';
+import { Enemy } from './Enemy.js?v=0.5.3';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.reset();window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -10,7 +10,7 @@ export class Game {
  reset(){this.player=new Player();this.player.reset(this.groundY);this.world=new World();this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.score=0;this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);document.getElementById('score').textContent='0';this.lastTime=null;}
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
  spawnPlatforms(){const ahead=this.world.distance+this.width+220;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];this.platforms.push({x:this.nextPlatformX,width,offset});this.nextPlatformX+=width+110+Math.random()*190;}this.platforms=this.platforms.filter(p=>p.x+p.width>this.world.distance-100);}
- spawnEnemies(){const ahead=this.world.distance+this.width+90;while(this.nextEnemyX<ahead){const x=this.nextEnemyX;const platforms=this.platforms.filter(p=>x>=p.x+12&&x+32<=p.x+p.width-12);const selected=platforms.length&&Math.random()<.55?platforms[Math.floor(Math.random()*platforms.length)]:null;const health=Math.random()<.38?2:1;this.enemies.push(new Enemy(x,selected?selected.offset:0,health));this.nextEnemyX+=65+Math.random()*180;}}
+ spawnEnemies(){const ahead=this.world.distance+this.width+90;while(this.nextEnemyX<ahead){const x=this.nextEnemyX;const platforms=this.platforms.filter(p=>x>=p.x+12&&x+32<=p.x+p.width-12);const selected=platforms.length&&Math.random()<.55?platforms[Math.floor(Math.random()*platforms.length)]:null;const health=Math.random()<.38?2:1;this.enemies.push(new Enemy(x,selected?selected.offset:0,health));this.nextEnemyX+=110+Math.random()*180;}}
  shoot(){const playerX=Math.round(this.width*.25);this.player.shoot();this.bullets.push({x:playerX+this.player.size+7,y:this.player.y+this.player.size*.5-3,width:14,height:6,speed:750});}
  resolveLanding(previousBottom){const x=Math.round(this.width*.25);const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of this.platforms){const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY)this.player.land(landingY);}
  update(dt){if(this.input.consumeJump())this.player.jump();if(this.input.consumeShoot())this.shoot();this.world.update(dt);this.spawnPlatforms();this.spawnEnemies();const previousBottom=this.player.y+this.player.size;this.player.update(dt);this.resolveLanding(previousBottom);const playerX=Math.round(this.width*.25);const playerBox={x:playerX,y:this.player.y,width:this.player.size,height:this.player.size};
