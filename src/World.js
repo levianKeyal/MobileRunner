@@ -1,5 +1,5 @@
 export class World {
- constructor(seed=12345){this.seed=seed>>>0;this.chunks=new Map();this.distance=0;this.speed=145;this.chunkWidth=180;}
+ constructor(seed=12345){this.seed=seed>>>0;this.chunks=new Map();this.distance=0;this.speed=135;this.chunkWidth=180;}
  random(){this.seed=(1664525*this.seed+1013904223)>>>0;return this.seed/4294967296;}
  getChunk(index){if(!this.chunks.has(index)){const buildings=[];let x=12;while(x<this.chunkWidth){const width=25+this.random()*25;buildings.push({x,width,height:60+this.random()*135});x+=width+9+this.random()*12;}this.chunks.set(index,buildings);}return this.chunks.get(index);}
  update(dt){this.distance+=this.speed*dt;}
