@@ -1,0 +1,7 @@
+export class World {
+ constructor(seed=12345){this.seed=seed>>>0;this.chunks=new Map();this.distance=0;this.speed=165;this.chunkWidth=180;}
+ random(){this.seed=(1664525*this.seed+1013904223)>>>0;return this.seed/4294967296;}
+ getChunk(index){if(!this.chunks.has(index)){const buildings=[];let x=12;while(x<this.chunkWidth){const width=25+this.random()*25;buildings.push({x,width,height:60+this.random()*135});x+=width+9+this.random()*12;}this.chunks.set(index,buildings);}return this.chunks.get(index);}
+ update(dt){this.distance+=this.speed*dt;}
+ draw(ctx,width,height,groundY){ctx.fillStyle='#111827';ctx.fillRect(0,0,width,height);const start=Math.floor(this.distance/this.chunkWidth)-1;const end=Math.floor((this.distance+width)/this.chunkWidth)+1;for(let index=Math.max(0,start);index<=end;index++){const offset=index*this.chunkWidth-this.distance;for(const b of this.getChunk(index)){ctx.fillStyle='#263449';ctx.fillRect(Math.round(offset+b.x),groundY-b.height,b.width,b.height);}}for(const index of this.chunks.keys())if(index<start-2||index>end+2)this.chunks.delete(index);ctx.fillStyle='#1e293b';ctx.fillRect(0,groundY,width,height-groundY);ctx.fillStyle='#64748b';ctx.fillRect(0,groundY,width,3);ctx.fillStyle='#475569';for(let x=-(this.distance%60);x<width;x+=60)ctx.fillRect(x+9,groundY+22,32,3);}
+}
