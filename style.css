@@ -27,3 +27,5 @@ button small{font-size:9px;letter-spacing:.07em}
 
 #results{opacity:0;pointer-events:none;transition:opacity .6s ease-in}
 #results.visible{opacity:1;pointer-events:auto}
+
+#debugTutorial[hidden]{display:none!important}
