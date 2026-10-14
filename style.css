@@ -24,3 +24,6 @@ button small{font-size:9px;letter-spacing:.07em}
 .results-grid strong{text-align:right;color:#fbbf24;font-variant-numeric:tabular-nums}
 #restart{position:relative;left:auto;right:auto;top:auto;bottom:auto;margin-top:30px;width:min(78vw,260px);height:66px;border-radius:16px;border:2px solid #86efac;background:#166534;color:white;font-size:22px;letter-spacing:.06em}
 #restart:active{background:#15803d}
+
+#results{opacity:0;pointer-events:none;transition:opacity .6s ease-in}
+#results.visible{opacity:1;pointer-events:auto}
