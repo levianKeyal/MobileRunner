@@ -2,6 +2,11 @@ const music=new Audio('./assets/nastelbom-intense-453507.mp3');
 music.loop=true;
 music.volume=0.35;
 music.preload='none';
+// Skip the nearly inaudible tail of the track to avoid a pause between loops.
+const LOOP_END_SECONDS=132.5;
+music.addEventListener('timeupdate',()=>{
+ if(music.currentTime>=LOOP_END_SECONDS){music.currentTime=0;}
+});
 const toggle=document.getElementById('musicToggle');
 let enabled=true;
 let started=false;
