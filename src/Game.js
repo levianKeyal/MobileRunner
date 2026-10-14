@@ -1,7 +1,7 @@
-import { Input } from './Input.js?v=0.9.3';
-import { Player } from './Player.js?v=0.9.3';
-import { World } from './World.js?v=0.9.3';
-import { Enemy } from './Enemy.js?v=0.9.3';
+import { Input } from './Input.js?v=0.9.4';
+import { Player } from './Player.js?v=0.9.4';
+import { World } from './World.js?v=0.9.4';
+import { Enemy } from './Enemy.js?v=0.9.4';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.reset();document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
