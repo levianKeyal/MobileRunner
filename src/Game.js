@@ -1,9 +1,9 @@
-import { DeathParticles } from './DeathParticles.js?v=0.10.4';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.4';
-import { Input } from './Input.js?v=0.10.4';
-import { Player } from './Player.js?v=0.10.4';
-import { World } from './World.js?v=0.10.4';
-import { Enemy } from './Enemy.js?v=0.10.4';
+import { DeathParticles } from './DeathParticles.js?v=0.10.5';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.5';
+import { Input } from './Input.js?v=0.10.5';
+import { Player } from './Player.js?v=0.10.5';
+import { World } from './World.js?v=0.10.5';
+import { Enemy } from './Enemy.js?v=0.10.5';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -19,7 +19,7 @@ export class Game {
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
  spawnPlatforms(){if(this.tutorialMode)return;const ahead=this.world.distance+this.width+220;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];this.platforms.push({x:this.nextPlatformX,width,offset,solid:Math.random()<.3});this.nextPlatformX+=width+110+Math.random()*190;}this.platforms=this.platforms.filter(p=>p.x+p.width>this.world.distance-100);}
  spawnEnemies(){const ahead=this.world.distance+this.width+90;while(this.nextEnemyX<ahead){const x=this.nextEnemyX;const arrivalTime=this.elapsedTime+Math.max(0,(x-this.world.distance-this.width)/this.world.speed);if(this.tutorialMode&&arrivalTime>=20){this.nextEnemyX=x+110+Math.random()*180;continue;}const platforms=this.platforms.filter(p=>x>=p.x+12&&x+32<=p.x+p.width-12);const selected=platforms.length&&Math.random()<.55?platforms[Math.floor(Math.random()*platforms.length)]:null;const roll=Math.random();const stageTime=arrivalTime;const type=this.tutorialMode?(stageTime<10?'basic':stageTime<15?(roll<.7?'basic':'shooter'):(roll<.58?'basic':roll<.85?'shooter':'burst')):(roll<.58?'basic':roll<.85?'shooter':'burst');this.enemies.push(new Enemy(x,selected?selected.offset:0,type));this.nextEnemyX+=110+Math.random()*180;}}
- shoot(direction='right'){const now=performance.now();if(now-this.lastShotAt<1000/3)return;this.lastShotAt=now;const vectors={right:[1,0],left:[-1,0],up:[0,-1],down:[0,1]};const [dx,dy]=vectors[direction]||vectors.right;this.player.shoot();playPlayerShot();const vertical=dy!==0;const width=vertical?6:14;const height=vertical?14:6;this.bullets.push({x:this.playerX+this.player.size/2-width/2+dx*(this.player.size/2+5),y:this.player.y+this.player.size/2-height/2+dy*(this.player.size/2+5),width,height,vx:dx*750,vy:dy*750});}
+ shoot(direction='right'){const now=performance.now();if(now-this.lastShotAt<1000/6)return;this.lastShotAt=now;const vectors={right:[1,0],left:[-1,0],up:[0,-1],down:[0,1]};const [dx,dy]=vectors[direction]||vectors.right;this.player.shoot();playPlayerShot();const vertical=dy!==0;const width=vertical?6:14;const height=vertical?14:6;this.bullets.push({x:this.playerX+this.player.size/2-width/2+dx*(this.player.size/2+5),y:this.player.y+this.player.size/2-height/2+dy*(this.player.size/2+5),width,height,vx:dx*750,vy:dy*750});}
  resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY)this.player.land(landingY);}
  update(dt){if(this.input.consumeJump())this.player.jump();let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.world.update(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();const previousBottom=this.player.y+this.player.size;this.player.update(dt);this.resolveLanding(previousBottom);
  const targetX=Math.round(this.width*.25);
