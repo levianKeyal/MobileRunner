@@ -4,7 +4,7 @@ export class PowerUp {
   this.type=type;
   this.size=24;
   this.x=x;
-  this.speed=scrollSpeed*1.03;
+  this.speed=scrollSpeed*1.10;
   this.phase=Math.PI/2;
   this.period=3.2;
   this.y=groundY-this.size;
