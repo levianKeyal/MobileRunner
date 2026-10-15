@@ -1,30 +1,51 @@
 const music=new Audio('./assets/nastelbom-intense-453507.mp3');
 music.loop=true;
-music.volume=0.35*0.65; // 65% of the previous music volume
 music.preload='none';
-// Skip the nearly inaudible tail of the track to avoid a pause between loops.
 const LOOP_END_SECONDS=132.5;
 music.addEventListener('timeupdate',()=>{
- if(music.currentTime>=LOOP_END_SECONDS){music.currentTime=0;}
+ if(music.currentTime>=LOOP_END_SECONDS)music.currentTime=0;
 });
-const toggle=document.getElementById('musicToggle');
+const enabledInput=document.getElementById('musicEnabled');
+const volumeInput=document.getElementById('musicVolume');
+const volumeValue=document.getElementById('volumeValue');
 const MUSIC_PREF_KEY='mobileRunner.musicEnabled';
+const VOLUME_PREF_KEY='mobileRunner.musicVolume';
 let enabled=true;
-try{enabled=localStorage.getItem(MUSIC_PREF_KEY)!=='false';}catch{}
+let volume=23;
+try{
+ enabled=localStorage.getItem(MUSIC_PREF_KEY)!=='false';
+ const saved=localStorage.getItem(VOLUME_PREF_KEY);
+ if(saved!==null&&Number.isFinite(Number(saved)))volume=Math.max(0,Math.min(100,Math.round(Number(saved))));
+}catch{}
 let started=false;
 let gamePaused=false;
-function render(){toggle.textContent=enabled?'♫ MÚSICA: ON':'♫ MÚSICA: OFF';toggle.setAttribute('aria-pressed',String(enabled));}
+function render(){
+ enabledInput.checked=enabled;
+ volumeInput.value=String(volume);
+ volumeValue.textContent=volume+' %';
+ music.volume=volume/100;
+}
 async function startMusic(){
  if(!enabled||started||gamePaused)return;
  started=true;
  try{await music.play();}catch{started=false;}
 }
-toggle.addEventListener('pointerdown',e=>e.stopPropagation());
-toggle.addEventListener('click',()=>{
- enabled=!enabled;try{localStorage.setItem(MUSIC_PREF_KEY,String(enabled));}catch{}render();
- if(enabled){startMusic();}else{music.pause();started=false;}
+enabledInput.addEventListener('change',()=>{
+ enabled=enabledInput.checked;
+ try{localStorage.setItem(MUSIC_PREF_KEY,String(enabled));}catch{}
+ if(!enabled){music.pause();started=false;}else startMusic();
+ render();
 });
-document.addEventListener('mobileRunner:pause',e=>{gamePaused=Boolean(e.detail?.paused);if(gamePaused){music.pause();started=false;}else if(enabled){startMusic();}});
+volumeInput.addEventListener('input',()=>{
+ volume=Number(volumeInput.value);
+ music.volume=volume/100;
+ volumeValue.textContent=volume+' %';
+ try{localStorage.setItem(VOLUME_PREF_KEY,String(volume));}catch{}
+});
+document.addEventListener('mobileRunner:pause',e=>{
+ gamePaused=Boolean(e.detail?.paused);
+ if(gamePaused){music.pause();started=false;}else if(enabled)startMusic();
+});
 document.addEventListener('pointerdown',startMusic,{passive:true});
 document.addEventListener('keydown',startMusic);
 render();
