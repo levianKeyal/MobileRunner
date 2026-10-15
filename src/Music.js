@@ -1,3 +1,4 @@
+import { getSfxSettings, setSfxEnabled, setSfxVolume } from './SoundEffects.js?v=0.10.28';
 const music=new Audio('./assets/nastelbom-intense-453507.mp3');
 music.loop=true;
 music.preload='none';
@@ -48,4 +49,22 @@ document.addEventListener('mobileRunner:pause',e=>{
 });
 document.addEventListener('pointerdown',startMusic,{passive:true});
 document.addEventListener('keydown',startMusic);
+const sfxEnabledInput=document.getElementById('sfxEnabled');
+const sfxVolumeInput=document.getElementById('sfxVolume');
+const sfxVolumeValue=document.getElementById('sfxVolumeValue');
+function renderSfx(){
+ const settings=getSfxSettings();
+ sfxEnabledInput.checked=settings.enabled;
+ sfxVolumeInput.value=String(settings.volume);
+ sfxVolumeValue.textContent=settings.volume+' %';
+}
+sfxEnabledInput.addEventListener('change',()=>{
+ setSfxEnabled(sfxEnabledInput.checked);
+ renderSfx();
+});
+sfxVolumeInput.addEventListener('input',()=>{
+ setSfxVolume(sfxVolumeInput.value);
+ renderSfx();
+});
+renderSfx();
 render();
