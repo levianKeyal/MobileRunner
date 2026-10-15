@@ -39,3 +39,7 @@ button small{font-size:9px;letter-spacing:.07em}
 #jump,#shoot{width:130px;height:130px;bottom:calc(env(safe-area-inset-bottom) + 24px)}
 #jump{left:calc(env(safe-area-inset-left) + 40px);right:auto}
 #shoot{right:calc(env(safe-area-inset-right) + 40px);left:auto}
+
+/* v0.10.22: suppress Firefox native button artifacts on jump control. */
+#jump{appearance:none;-webkit-appearance:none;outline:none;box-shadow:none;background:#334155d9}
+#jump:focus,#jump:focus-visible,#jump:active{outline:none;box-shadow:none}
