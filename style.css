@@ -43,3 +43,8 @@ button small{font-size:9px;letter-spacing:.07em}
 /* v0.10.22: suppress Firefox native button artifacts on jump control. */
 #jump{appearance:none;-webkit-appearance:none;outline:none;box-shadow:none;background:#334155d9}
 #jump:focus,#jump:focus-visible,#jump:active{outline:none;box-shadow:none}
+
+/* v0.10.23: jump is a custom element, not a Firefox native button. */
+#jump{position:absolute;pointer-events:auto;touch-action:none;box-sizing:border-box;border:2px solid #86efac;border-radius:50%;background:#334155d9;color:#fff;font:700 28px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;flex-direction:column;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;outline:0;box-shadow:none}
+#jump small{font-size:9px;letter-spacing:.07em}
+#jump:active{transform:scale(.96);background:#475569}
