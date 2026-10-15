@@ -4,16 +4,16 @@ export class Enemy {
   if(this.type!=='jumper')return false;
   if(this.jumpState==='waiting'){
    this.jumpWait-=dt;
-   if(this.jumpWait<=0){this.jumpState='rising';this.jumpVelocity=650;this.jumpHeight=45+Math.random()*75;}
+   if(this.jumpWait<=0){this.jumpState='rising';this.jumpVelocity=360;}
   }else if(this.jumpState==='rising'){
    this.jumpOffset+=this.jumpVelocity*dt;
-   this.jumpVelocity-=1800*dt;
+   this.jumpVelocity-=520*dt;
    if(this.jumpOffset>=this.jumpHeight||this.jumpVelocity<=0){
     this.jumpOffset=Math.min(this.jumpOffset,this.jumpHeight);
     this.jumpVelocity=0;this.jumpState='falling';
    }
   }else{
-   this.jumpVelocity+=5200*dt;
+   this.jumpVelocity+=1250*dt;
    this.jumpOffset-=this.jumpVelocity*dt;
    if(this.jumpOffset<=0){
     this.jumpOffset=0;this.jumpVelocity=0;
