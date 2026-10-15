@@ -61,3 +61,17 @@ button small{font-size:9px;letter-spacing:.07em}
 .pause-placeholder{min-height:165px}
 #resume{position:relative;left:auto;right:auto;top:auto;bottom:auto;width:min(76vw,260px);height:64px;border-radius:14px;border:2px solid #86efac;background:#166534;font-size:20px}
 @media(max-width:410px){#pause{width:56px;height:56px;bottom:calc(env(safe-area-inset-bottom) + 63px)}}
+
+/* v0.10.27: saved music controls inside the pause options card */
+.pause-options{display:flex;flex-direction:column;gap:24px;text-align:left}
+.pause-options h3{text-align:center;margin-bottom:4px}
+.music-setting,.volume-setting{display:flex;align-items:center;justify-content:space-between;gap:16px;color:#e2e8f0;font-size:14px;font-weight:700;letter-spacing:.04em}
+.music-setting input[type=checkbox]{appearance:none;-webkit-appearance:none;position:relative;flex-shrink:0;width:54px;height:30px;border:2px solid #94a3b8;border-radius:18px;background:#475569;cursor:pointer}
+.music-setting input[type=checkbox]::before{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#e2e8f0;transition:transform .15s ease}
+.music-setting input[type=checkbox]:checked{background:#166534;border-color:#86efac}
+.music-setting input[type=checkbox]:checked::before{transform:translateX(23px)}
+.music-setting input[type=checkbox]:focus-visible,.volume-setting input:focus-visible{outline:2px solid #fbbf24;outline-offset:3px}
+.volume-setting{flex-direction:column;align-items:stretch;gap:14px}
+.volume-setting label{display:flex;justify-content:space-between}
+.volume-setting output{color:#fbbf24;font-variant-numeric:tabular-nums}
+.volume-setting input[type=range]{width:100%;height:30px;accent-color:#86efac;touch-action:pan-x;cursor:pointer}
