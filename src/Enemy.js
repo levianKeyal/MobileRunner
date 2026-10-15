@@ -1,6 +1,28 @@
 export class Enemy {
- constructor(worldX,surfaceOffset=0,type='basic',size=32){this.worldX=worldX;this.surfaceOffset=surfaceOffset;this.size=size;this.type=type;this.health=(type==='basic'||type==='jumper')?1:2;this.shooter=type==='shooter'||type==='burst';this.jumpHeight=type==='jumper'?45+Math.random()*75:0;this.jumpPhase=Math.random()*Math.PI*2;this.jumpPeriod=1.4+Math.random()*.65;this.jumpOffset=0;this.fireTimer=0.4+Math.random()*0.25;this.hasEnteredScreen=false;this.burstRemaining=type==='burst'?3:0;}
- update(dt){if(this.type==='jumper'){this.jumpPhase+=dt*2*Math.PI/this.jumpPeriod;this.jumpOffset=this.jumpHeight*Math.max(0,Math.sin(this.jumpPhase));}}
+ constructor(worldX,surfaceOffset=0,type='basic',size=32){this.worldX=worldX;this.surfaceOffset=surfaceOffset;this.size=size;this.type=type;this.health=(type==='basic'||type==='jumper')?1:2;this.shooter=type==='shooter'||type==='burst';this.jumpHeight=type==='jumper'?45+Math.random()*75:0;this.jumpOffset=0;this.jumpVelocity=0;this.jumpState='waiting';this.jumpWait=Math.random()*1.2;this.fireTimer=0.4+Math.random()*0.25;this.hasEnteredScreen=false;this.burstRemaining=type==='burst'?3:0;}
+ update(dt){
+  if(this.type!=='jumper')return false;
+  if(this.jumpState==='waiting'){
+   this.jumpWait-=dt;
+   if(this.jumpWait<=0){this.jumpState='rising';this.jumpVelocity=650;this.jumpHeight=45+Math.random()*75;}
+  }else if(this.jumpState==='rising'){
+   this.jumpOffset+=this.jumpVelocity*dt;
+   this.jumpVelocity-=1800*dt;
+   if(this.jumpOffset>=this.jumpHeight||this.jumpVelocity<=0){
+    this.jumpOffset=Math.min(this.jumpOffset,this.jumpHeight);
+    this.jumpVelocity=0;this.jumpState='falling';
+   }
+  }else{
+   this.jumpVelocity+=5200*dt;
+   this.jumpOffset-=this.jumpVelocity*dt;
+   if(this.jumpOffset<=0){
+    this.jumpOffset=0;this.jumpVelocity=0;
+    this.jumpState='waiting';this.jumpWait=.55+Math.random()*.6;
+    return true;
+   }
+  }
+  return false;
+ }
  box(x,groundY){return {x,y:groundY-this.surfaceOffset-this.size-this.jumpOffset,width:this.size,height:this.size};}
  hit(){this.health--;return this.health<=0;}
  advanceFireTimer(dt){this.fireTimer-=dt;if(this.fireTimer>0)return false;if(this.type==='burst'){this.burstRemaining--;if(this.burstRemaining>0){this.fireTimer=0.25;}else{this.burstRemaining=3;this.fireTimer=2.3+Math.random()*0.7;}}else{this.fireTimer=2.0+Math.random()*0.9;}return true;}
