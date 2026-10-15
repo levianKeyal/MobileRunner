@@ -8,7 +8,9 @@ music.addEventListener('timeupdate',()=>{
  if(music.currentTime>=LOOP_END_SECONDS){music.currentTime=0;}
 });
 const toggle=document.getElementById('musicToggle');
+const MUSIC_PREF_KEY='mobileRunner.musicEnabled';
 let enabled=true;
+try{enabled=localStorage.getItem(MUSIC_PREF_KEY)!=='false';}catch{}
 let started=false;
 function render(){toggle.textContent=enabled?'♫ MÚSICA: ON':'♫ MÚSICA: OFF';toggle.setAttribute('aria-pressed',String(enabled));}
 async function startMusic(){
@@ -18,7 +20,7 @@ async function startMusic(){
 }
 toggle.addEventListener('pointerdown',e=>e.stopPropagation());
 toggle.addEventListener('click',()=>{
- enabled=!enabled;render();
+ enabled=!enabled;try{localStorage.setItem(MUSIC_PREF_KEY,String(enabled));}catch{}render();
  if(enabled){startMusic();}else{music.pause();started=false;}
 });
 document.addEventListener('pointerdown',startMusic,{passive:true});
