@@ -1,11 +1,12 @@
 // Small ground-impact dust burst, drawn as lightweight Canvas squares.
 export class ImpactDust {
- constructor(worldX,y){
+ constructor(worldX,y,intensity=1){
+  const power=Math.max(.35,Math.min(2.5,intensity));
   this.groundY=y;
-  this.particles=Array.from({length:12},(_,i)=>({
-   worldX:worldX+(Math.random()-.5)*22,y:y-3,
-   vx:(Math.random()-.5)*155,vy:-35-Math.random()*125,
-   size:2+Math.random()*5,life:.35+Math.random()*.35,
+  this.particles=Array.from({length:Math.round(12*power)},(_,i)=>({
+   worldX:worldX+(Math.random()-.5)*22*power,y:y-3,
+   vx:(Math.random()-.5)*155*Math.sqrt(power),vy:-35-Math.random()*125*Math.sqrt(power),
+   size:2+Math.random()*5*Math.min(1.35,power),life:.35+Math.random()*.35,
    maxLife:0,color:i%3===0?'#cbd5e1':i%2===0?'#94a3b8':'#64748b'
   }));
   for(const p of this.particles)p.maxLife=p.life;
