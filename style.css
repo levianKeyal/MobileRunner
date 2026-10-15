@@ -75,3 +75,9 @@ button small{font-size:9px;letter-spacing:.07em}
 .volume-setting label{display:flex;justify-content:space-between}
 .volume-setting output{color:#fbbf24;font-variant-numeric:tabular-nums}
 .volume-setting input[type=range]{width:100%;height:30px;accent-color:#86efac;touch-action:pan-x;cursor:pointer}
+
+/* v0.10.28: separate music and SFX sections */
+.pause-options{gap:16px;min-height:0}
+.audio-divider{height:1px;background:#475569;margin:2px 0}
+#pausePanel{gap:14px}
+.pause-options .volume-setting{gap:8px}
