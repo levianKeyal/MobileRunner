@@ -1,7 +1,21 @@
 export class Input {
  constructor(){
-  this.jumpQueued=false;this.shootQueue=[];
-  this.bind('jump',()=>this.jumpQueued=true);
+  this.jumpQueued=false;this.jumpHeld=false;this.shootQueue=[];
+  const jump=document.getElementById('jump');
+  let jumpPointer=null;
+  jump.addEventListener('pointerdown',e=>{
+   if(jumpPointer!==null)return;
+   e.preventDefault();jumpPointer=e.pointerId;
+   this.jumpHeld=true;this.jumpQueued=true;
+   try{jump.setPointerCapture(e.pointerId);}catch{}
+  });
+  const releaseJump=e=>{
+   if(e.pointerId!==jumpPointer)return;
+   jumpPointer=null;this.jumpHeld=false;
+  };
+  jump.addEventListener('pointerup',releaseJump);
+  jump.addEventListener('pointercancel',releaseJump);
+  jump.addEventListener('lostpointercapture',releaseJump);
   const shoot=document.getElementById('shoot');
   const canvas=shoot.querySelector('.shoot-visual');
   const ctx=canvas.getContext('2d');
@@ -56,9 +70,11 @@ export class Input {
   shoot.addEventListener('lostpointercapture',clear);
   window.addEventListener('keydown',e=>{
    if(e.repeat)return;
-   if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();this.jumpQueued=true;}
+   if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();this.jumpHeld=true;this.jumpQueued=true;}
    if(e.code==='KeyX')this.shootQueue.push('right');
   });
+  window.addEventListener('keyup',e=>{if(e.code==='Space'||e.code==='ArrowUp')this.jumpHeld=false;});
+  window.addEventListener('blur',()=>{this.jumpHeld=false;});
  }
  bind(id,fn){document.getElementById(id).addEventListener('pointerdown',e=>{e.preventDefault();fn();});}
  consumeJump(){const v=this.jumpQueued;this.jumpQueued=false;return v;}
