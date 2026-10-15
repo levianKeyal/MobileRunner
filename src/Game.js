@@ -1,11 +1,11 @@
-import { ImpactDust } from './ImpactDust.js?v=0.10.15';
-import { PowerUp } from './PowerUp.js?v=0.10.15';
-import { DeathParticles } from './DeathParticles.js?v=0.10.15';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.15';
-import { Input } from './Input.js?v=0.10.15';
-import { Player } from './Player.js?v=0.10.15';
-import { World } from './World.js?v=0.10.15';
-import { Enemy } from './Enemy.js?v=0.10.15';
+import { ImpactDust } from './ImpactDust.js?v=0.10.16';
+import { PowerUp } from './PowerUp.js?v=0.10.16';
+import { DeathParticles } from './DeathParticles.js?v=0.10.16';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.16';
+import { Input } from './Input.js?v=0.10.16';
+import { Player } from './Player.js?v=0.10.16';
+import { World } from './World.js?v=0.10.16';
+import { Enemy } from './Enemy.js?v=0.10.16';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -24,7 +24,7 @@ export class Game {
  spawnEnergy(dt){if(this.tutorialMode)return;while(this.elapsedTime>=this.nextEnergyAt){this.energyItems.push(new PowerUp('energy',this.width+30,this.groundY,this.world.speed));this.nextEnergyAt+=45+Math.random()*20;}for(const item of this.energyItems)item.update(dt,this.groundY);this.energyItems=this.energyItems.filter(item=>item.x+item.size>-30);}
  receiveHit(){if(this.player.invulnerable>0)return;if(this.player.takeHit())this.die();}
  shoot(direction='right'){const now=performance.now();if(now-this.lastShotAt<1000/8)return;this.lastShotAt=now;const vectors={right:[1,0],left:[-1,0],up:[0,-1],down:[0,1]};const [dx,dy]=vectors[direction]||vectors.right;this.player.shoot();playPlayerShot();const vertical=dy!==0;const width=vertical?6:14;const height=vertical?14:6;this.bullets.push({x:this.playerX+this.player.size/2-width/2+dx*(this.player.size/2+5),y:this.player.y+this.player.size/2-height/2+dy*(this.player.size/2+5),width,height,vx:dx*750,vy:dy*750});}
- resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY)this.player.land(landingY);}
+ resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;this.player.land(landingY);if(wasAirborne)this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY));}}
  update(dt){if(this.input.consumeJump())this.player.jump();this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.world.update(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();for(const enemy of this.enemies){
   if(enemy.update(dt))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
  }
