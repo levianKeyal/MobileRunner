@@ -10,7 +10,7 @@ export class DeathParticles {
    return {x:x+size*(.12+Math.random()*.76),y:y+size*(.12+Math.random()*.76),
     vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-90,
     size:s,angle:Math.random()*Math.PI*2,spin:(Math.random()-.5)*11,
-    color:i%5===0?'#bbf7d0':i%4===0?'#86efac':'#22c55e',rest:false};
+    color:i%5===0?'#ffffff':i%4===0?'#fecaca':'#ef4444',rest:false};
   });
  }
  update(dt){
