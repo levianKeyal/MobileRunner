@@ -34,3 +34,8 @@ button small{font-size:9px;letter-spacing:.07em}
 #controls{left:0;right:0;bottom:0;width:100%;height:180px}
 #jump{left:calc(env(safe-area-inset-left) + 24px);right:auto;bottom:calc(env(safe-area-inset-bottom) + 32px)}
 #shoot{right:calc(env(safe-area-inset-right) + 24px);left:auto;bottom:calc(env(safe-area-inset-bottom) + 24px)}
+
+/* v0.10.21: equal-sized controls, aligned on one horizontal axis. */
+#jump,#shoot{width:130px;height:130px;bottom:calc(env(safe-area-inset-bottom) + 24px)}
+#jump{left:calc(env(safe-area-inset-left) + 40px);right:auto}
+#shoot{right:calc(env(safe-area-inset-right) + 40px);left:auto}
