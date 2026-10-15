@@ -48,3 +48,16 @@ button small{font-size:9px;letter-spacing:.07em}
 #jump{position:absolute;pointer-events:auto;touch-action:none;box-sizing:border-box;border:2px solid #86efac;border-radius:50%;background:#334155d9;color:#fff;font:700 28px system-ui,sans-serif;display:flex;align-items:center;justify-content:center;flex-direction:column;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;outline:0;box-shadow:none}
 #jump small{font-size:9px;letter-spacing:.07em}
 #jump:active{transform:scale(.96);background:#475569}
+
+/* v0.10.26: pause button and options overlay */
+#pause{left:50%;right:auto;bottom:calc(env(safe-area-inset-bottom) + 59px);transform:translateX(-50%);width:64px;height:64px;border:2px solid #cbd5e1;background:#334155;color:#fff;font-size:24px;z-index:2;appearance:none;-webkit-appearance:none;outline:0;box-shadow:none}
+#pause:active{transform:translateX(-50%) scale(.96);background:#475569}
+#pause small{font-size:9px}
+#pausePanel[hidden]{display:none!important}
+#pausePanel{position:absolute;inset:0;z-index:8;background:#0f172ae8;color:#f8fafc;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:22px;padding:24px}
+#pausePanel h2{margin:0;color:#fbbf24;font-size:30px;letter-spacing:.08em}
+.pause-options{width:min(90vw,420px);min-height:230px;border:1px solid #64748b;border-radius:16px;background:#1e293b;padding:20px;text-align:center}
+.pause-options h3{margin:0;color:#e2e8f0;font-size:18px;letter-spacing:.07em}
+.pause-placeholder{min-height:165px}
+#resume{position:relative;left:auto;right:auto;top:auto;bottom:auto;width:min(76vw,260px);height:64px;border-radius:14px;border:2px solid #86efac;background:#166534;font-size:20px}
+@media(max-width:410px){#pause{width:56px;height:56px;bottom:calc(env(safe-area-inset-bottom) + 63px)}}
