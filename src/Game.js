@@ -1,12 +1,12 @@
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.27';
-import { ImpactDust } from './ImpactDust.js?v=0.10.27';
-import { PowerUp } from './PowerUp.js?v=0.10.27';
-import { DeathParticles } from './DeathParticles.js?v=0.10.27';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.27';
-import { Input } from './Input.js?v=0.10.27';
-import { Player } from './Player.js?v=0.10.27';
-import { World } from './World.js?v=0.10.27';
-import { Enemy } from './Enemy.js?v=0.10.27';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.28';
+import { ImpactDust } from './ImpactDust.js?v=0.10.28';
+import { PowerUp } from './PowerUp.js?v=0.10.28';
+import { DeathParticles } from './DeathParticles.js?v=0.10.28';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.28';
+import { Input } from './Input.js?v=0.10.28';
+import { Player } from './Player.js?v=0.10.28';
+import { World } from './World.js?v=0.10.28';
+import { Enemy } from './Enemy.js?v=0.10.28';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
