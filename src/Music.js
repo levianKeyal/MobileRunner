@@ -1,6 +1,6 @@
 const music=new Audio('./assets/nastelbom-intense-453507.mp3');
 music.loop=true;
-music.volume=0.35;
+music.volume=0.35*0.65; // 65% of the previous music volume
 music.preload='none';
 // Skip the nearly inaudible tail of the track to avoid a pause between loops.
 const LOOP_END_SECONDS=132.5;
