@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.34';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.34';
-import { ImpactDust } from './ImpactDust.js?v=0.10.34';
-import { PowerUp } from './PowerUp.js?v=0.10.34';
-import { DeathParticles } from './DeathParticles.js?v=0.10.34';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.34';
-import { Input } from './Input.js?v=0.10.34';
-import { Player } from './Player.js?v=0.10.34';
-import { World } from './World.js?v=0.10.34';
-import { Enemy } from './Enemy.js?v=0.10.34';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.35';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.35';
+import { ImpactDust } from './ImpactDust.js?v=0.10.35';
+import { PowerUp } from './PowerUp.js?v=0.10.35';
+import { DeathParticles } from './DeathParticles.js?v=0.10.35';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.35';
+import { Input } from './Input.js?v=0.10.35';
+import { Player } from './Player.js?v=0.10.35';
+import { World } from './World.js?v=0.10.35';
+import { Enemy } from './Enemy.js?v=0.10.35';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -144,7 +144,7 @@ export class Game {
     if(enemy.update(dt))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
    }
   }
-  this.impactDust=this.impactDust.filter(dust=>!dust.update(dt));this.enemyFragments.forEach(f=>f.update(dt));this.enemyFragments=this.enemyFragments.filter(f=>!f.isOffscreen(this.world.distance));
+  this.impactDust=this.impactDust.filter(dust=>!dust.update(dt));this.enemyFragments.forEach(f=>f.update(dt));this.enemyFragments=this.enemyFragments.filter(f=>!f.isOffscreen(this.world.distance));this.blockDebris=this.blockDebris.filter(d=>!d.update(dt,this.groundY));
  }
  frame(time){try{const dt=this.lastTime===null?0:Math.min((time-this.lastTime)/1000,.033);this.lastTime=time;if(this.paused){this.draw();return;}if(!this.gameOver)this.update(dt);else if(this.deathPhase==='exploding'){const duration=.8;const oldDistance=this.world.distance;if(this.deathScrollElapsed<duration){this.deathScrollElapsed=Math.min(duration,this.deathScrollElapsed+dt);const t=this.deathScrollElapsed/duration;const distanceOffset=this.deathScrollSpeed*duration*(t-t*t+t*t*t/3);this.world.distance=this.deathScrollStart+distanceOffset;}const shift=this.world.distance-oldDistance;this.updateDeathWorld(dt,shift);const settled=this.deathParticles?.update(dt);if(settled&&this.deathScrollElapsed>=duration){this.deathPhase='results';const panel=document.getElementById('results');panel.hidden=false;requestAnimationFrame(()=>{if(this.gameOver&&this.deathPhase==='results')panel.classList.add('visible');});}}else if(this.gameOver&&this.deathPhase==='results'){this.updateDeathWorld(dt,0);}this.draw();}catch(error){if(!this.runtimeError){this.runtimeError=String(error?.stack||error);console.error('MobileRunner runtime error',error);const notice=document.createElement('div');notice.id='runtimeError';notice.style.cssText='position:absolute;top:100px;left:12px;right:12px;z-index:20;padding:12px;background:#7f1d1d;color:white;font:12px monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-height:35vh;overflow:auto';notice.textContent='Error del juego (captura esta pantalla): '+this.runtimeError;document.getElementById('app').appendChild(notice);}}finally{requestAnimationFrame(t=>this.frame(t));}}
 }
