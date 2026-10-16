@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.30';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.30';
-import { ImpactDust } from './ImpactDust.js?v=0.10.30';
-import { PowerUp } from './PowerUp.js?v=0.10.30';
-import { DeathParticles } from './DeathParticles.js?v=0.10.30';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.30';
-import { Input } from './Input.js?v=0.10.30';
-import { Player } from './Player.js?v=0.10.30';
-import { World } from './World.js?v=0.10.30';
-import { Enemy } from './Enemy.js?v=0.10.30';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.31';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.31';
+import { ImpactDust } from './ImpactDust.js?v=0.10.31';
+import { PowerUp } from './PowerUp.js?v=0.10.31';
+import { DeathParticles } from './DeathParticles.js?v=0.10.31';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.31';
+import { Input } from './Input.js?v=0.10.31';
+import { Player } from './Player.js?v=0.10.31';
+import { World } from './World.js?v=0.10.31';
+import { Enemy } from './Enemy.js?v=0.10.31';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -44,12 +44,48 @@ export class Game {
  spawnEnergy(dt){if(this.tutorialMode)return;while(this.elapsedTime>=this.nextEnergyAt){this.energyItems.push(new PowerUp('energy',this.width+30,this.groundY,this.world.speed));this.nextEnergyAt+=45+Math.random()*20;}for(const item of this.energyItems)item.update(dt,this.groundY);this.energyItems=this.energyItems.filter(item=>item.x+item.size>-30);}
  receiveHit(){if(this.player.invulnerable>0)return;if(this.player.takeHit())this.die();}
  shoot(direction='right'){const now=performance.now();if(now-this.lastShotAt<1000/8)return;this.lastShotAt=now;const vectors={right:[1,0],left:[-1,0],up:[0,-1],down:[0,1]};const [dx,dy]=vectors[direction]||vectors.right;this.player.shoot();playPlayerShot();const vertical=dy!==0;const width=vertical?6:14;const height=vertical?14:6;const x=this.playerX+this.player.size/2-width/2+dx*(this.player.size/2+5);const y=this.player.y+this.player.size/2-height/2+dy*(this.player.size/2+5);const life=dx>0?Math.max(0,(this.width-x-width)*.8/750):.45;this.bullets.push({x,y,width,height,vx:dx*750,vy:dy*750,life});}
- resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;if(x+this.player.size>px&&x<px+tile.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp)this.player.squashTime=this.player.squashDuration;this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
+ breakBlock(wall,tile){
+  if(wall.breakTile(tile.row,tile.col)){this.blockDebris.push(new BlockDebris(tile));return true;}
+  return false;
+ }
+ collideBreakableBlocks(previousY){
+  const player=this.player, left=this.playerX,right=left+player.size;
+  const previousTop=previousY,previousBottom=previousY+player.size;
+  const currentTop=player.y,currentBottom=currentTop+player.size;
+  const goingUp=player.vy<0&&!player.stomping;
+  const goingDown=player.stomping&&player.vy>0;
+  if(!goingUp&&!goingDown)return;
+  const hits=[];
+  for(const wall of this.platforms){
+   if(!wall.breakable)continue;
+   for(const tile of wall.tiles(this.groundY)){
+    const tileLeft=tile.x-this.world.distance;
+    if(right<=tileLeft+1||left>=tileLeft+tile.width-1)continue;
+    if(goingUp&&previousTop>=tile.y+tile.height-2&&currentTop<=tile.y+tile.height){
+     hits.push({wall,tile,edge:tile.y+tile.height});
+    }else if(goingDown&&previousBottom<=tile.y+2&&currentBottom>=tile.y){
+     hits.push({wall,tile,edge:tile.y});
+    }
+   }
+  }
+  if(goingUp&&hits.length){
+   // Break all tiles struck by the head at the nearest ceiling, then stop rising.
+   const ceiling=Math.max(...hits.map(hit=>hit.edge));
+   for(const hit of hits)if(Math.abs(hit.edge-ceiling)<2)this.breakBlock(hit.wall,hit.tile);
+   player.y=ceiling;
+   player.vy=0;
+   player.jumpCut=true;
+  }else if(goingDown){
+   // Every crossed row breaks; stomp continues without slowing or landing.
+   for(const hit of hits)this.breakBlock(hit.wall,hit.tile);
+  }
+ }
+ resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){if(this.player.stomping)continue;for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;if(x+this.player.size>px&&x<px+tile.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp)this.player.squashTime=this.player.squashDuration;this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
  update(dt){if(this.input.consumeJump()){if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.world.update(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();for(const enemy of this.enemies){
   if(enemy.update(dt))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
  }
  this.impactDust=this.impactDust.filter(dust=>!dust.update(dt));this.enemyFragments.forEach(f=>f.update(dt));this.enemyFragments=this.enemyFragments.filter(f=>!f.isOffscreen(this.world.distance));this.blockDebris=this.blockDebris.filter(d=>!d.update(dt,this.groundY));
- const previousBottom=this.player.y+this.player.size;this.player.update(dt);if(!this.player.grounded)this.jumpApexY=Math.min(this.jumpApexY,this.player.y);if(this.player.stomping){
+ const previousY=this.player.y;const previousBottom=previousY+this.player.size;this.player.update(dt);this.collideBreakableBlocks(previousY);if(!this.player.grounded)this.jumpApexY=Math.min(this.jumpApexY,this.player.y);if(this.player.stomping){
   const bottom=this.player.y+this.player.size;
   for(const enemy of this.enemies){
    const box=enemy.box(enemy.worldX-this.world.distance,this.groundY);
@@ -69,7 +105,7 @@ export class Game {
  let pushed=false;
  for(const wall of [...this.platforms,...this.tutorialWalls]){
   if(!wall.solid)continue;
-  if(wall.breakable){for(const tile of wall.tiles(this.groundY)){const left=tile.x-this.world.distance;const top=tile.y;const overlap=this.player.y+this.player.size>top+2&&this.player.y<top+tile.height&&this.playerX+this.player.size>left&&this.playerX<left+tile.width;if(overlap){this.playerX=Math.min(this.playerX,left-this.player.size);pushed=true;}}continue;}
+  if(wall.breakable){if(this.player.stomping)continue;for(const tile of wall.tiles(this.groundY)){const left=tile.x-this.world.distance;const top=tile.y;const overlap=this.player.y+this.player.size>top+2&&this.player.y<top+tile.height&&this.playerX+this.player.size>left&&this.playerX<left+tile.width;if(overlap){this.playerX=Math.min(this.playerX,left-this.player.size);pushed=true;}}continue;}
   const left=wall.x-this.world.distance;
   const top=this.groundY-wall.offset;
   const sideContact=this.player.y+this.player.size>top+2&&this.player.y<this.groundY&&this.playerX+this.player.size>left&&this.playerX<left+wall.width;
@@ -94,7 +130,7 @@ export class Game {
   const swept={x:Math.min(previousX,bullet.x),y:Math.min(previousY,bullet.y),width:bullet.width+Math.abs(bullet.x-previousX),height:bullet.height+Math.abs(bullet.y-previousY)};
   if(intersects(swept,box)){const distance=Math.abs(box.x-previousX)+Math.abs(box.y-previousY);if(distance<blockDistance){blockDistance=distance;hitBlock={wall,tile};}}
  }}
- let hit=null;let nearest=Infinity;for(const enemy of this.enemies){const box=enemy.box(enemy.worldX-this.world.distance,this.groundY);const swept={x:Math.min(previousX,bullet.x),y:Math.min(previousY,bullet.y),width:bullet.width+Math.abs(bullet.x-previousX),height:bullet.height+Math.abs(bullet.y-previousY)};if(intersects(swept,box)&&box.x<nearest){nearest=box.x;hit=enemy;}}if(hitBlock&&(!hit||blockDistance<=Math.abs(nearest-previousX))){if(hitBlock.wall.breakTile(hitBlock.tile.row,hitBlock.tile.col))this.blockDebris.push(new BlockDebris(hitBlock.tile));}else if(hit){if(hit.hit()){this.enemyFragments.push(new EnemyFragments(hit,this.groundY));this.enemies.splice(this.enemies.indexOf(hit),1);this.score++;document.getElementById('score').textContent=String(this.score);}}else if(bullet.x+bullet.width>0&&bullet.x<this.width+20&&bullet.y+bullet.height>0&&bullet.y<this.height+20)survivors.push(bullet);}this.bullets=survivors;
+ let hit=null;let nearest=Infinity;for(const enemy of this.enemies){const box=enemy.box(enemy.worldX-this.world.distance,this.groundY);const swept={x:Math.min(previousX,bullet.x),y:Math.min(previousY,bullet.y),width:bullet.width+Math.abs(bullet.x-previousX),height:bullet.height+Math.abs(bullet.y-previousY)};if(intersects(swept,box)&&box.x<nearest){nearest=box.x;hit=enemy;}}if(hitBlock&&(!hit||blockDistance<=Math.abs(nearest-previousX))){this.breakBlock(hitBlock.wall,hitBlock.tile);}else if(hit){if(hit.hit()){this.enemyFragments.push(new EnemyFragments(hit,this.groundY));this.enemies.splice(this.enemies.indexOf(hit),1);this.score++;document.getElementById('score').textContent=String(this.score);}}else if(bullet.x+bullet.width>0&&bullet.x<this.width+20&&bullet.y+bullet.height>0&&bullet.y<this.height+20)survivors.push(bullet);}this.bullets=survivors;
  const hostile=[];for(const bullet of this.enemyBullets){const previousX=bullet.x;bullet.x-=bullet.speed*dt;const swept={x:bullet.x,y:bullet.y,width:bullet.width+previousX-bullet.x,height:bullet.height};if(intersects(swept,playerBox)){this.receiveHit();if(this.gameOver)return;continue;}if(bullet.x+bullet.width>0)hostile.push(bullet);}this.enemyBullets=hostile;
  this.enemies=this.enemies.filter(e=>e.worldX+e.size>this.world.distance);for(const enemy of this.enemies){if(intersects(playerBox,enemy.box(enemy.worldX-this.world.distance,this.groundY))){this.receiveHit();if(this.gameOver)return;}}}
  draw(){this.world.draw(this.ctx,this.width,this.height,this.groundY);for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){p.draw(this.ctx,this.world.distance,this.groundY);continue;}const x=p.x-this.world.distance;const y=this.groundY-p.offset;this.ctx.fillStyle=p.solid?'#475569':'#64748b';this.ctx.fillRect(x,y,p.width,p.solid?p.offset:14);this.ctx.fillStyle=p.solid?'#cbd5e1':'#94a3b8';this.ctx.fillRect(x,y,p.width,4);this.ctx.fillStyle='#334155';for(let stripe=x+12;stripe<x+p.width-8;stripe+=28)this.ctx.fillRect(stripe,y+7,13,3);}for(const item of this.energyItems)item.draw(this.ctx);for(const enemy of this.enemies)enemy.draw(this.ctx,enemy.worldX-this.world.distance,this.groundY);for(const dust of this.impactDust)dust.draw(this.ctx,this.world.distance);for(const fragments of this.enemyFragments)fragments.draw(this.ctx,this.world.distance);for(const debris of this.blockDebris)debris.draw(this.ctx,this.world.distance);if(!this.gameOver)this.player.draw(this.ctx,this.playerX);if(this.deathParticles)this.deathParticles.draw(this.ctx);this.ctx.fillStyle='#fde047';for(const bullet of this.bullets)this.ctx.fillRect(bullet.x,bullet.y,bullet.width,bullet.height);this.ctx.fillStyle='#fb923c';for(const bullet of this.enemyBullets)this.ctx.fillRect(bullet.x,bullet.y,bullet.width,bullet.height);document.getElementById('distance').textContent=`${Math.floor(this.world.distance/10)} m`;}
