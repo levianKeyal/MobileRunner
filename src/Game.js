@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.39';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.39';
-import { ImpactDust } from './ImpactDust.js?v=0.10.39';
-import { PowerUp } from './PowerUp.js?v=0.10.39';
-import { DeathParticles } from './DeathParticles.js?v=0.10.39';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.39';
-import { Input } from './Input.js?v=0.10.39';
-import { Player } from './Player.js?v=0.10.39';
-import { World } from './World.js?v=0.10.39';
-import { Enemy } from './Enemy.js?v=0.10.39';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.40';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.40';
+import { ImpactDust } from './ImpactDust.js?v=0.10.40';
+import { PowerUp } from './PowerUp.js?v=0.10.40';
+import { DeathParticles } from './DeathParticles.js?v=0.10.40';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.40';
+import { Input } from './Input.js?v=0.10.40';
+import { Player } from './Player.js?v=0.10.40';
+import { World } from './World.js?v=0.10.40';
+import { Enemy } from './Enemy.js?v=0.10.40';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -117,8 +117,9 @@ export class Game {
   const bottom=this.player.y+this.player.size;
   for(const enemy of this.enemies){
    const box=enemy.box(enemy.worldX-this.world.distance,this.groundY);
-   const horizontally=this.playerX+this.player.size>box.x+3&&this.playerX<box.x+box.width-3;
-   if(horizontally&&previousBottom<=box.y+12&&bottom>=box.y&&this.player.vy>0){
+   const horizontally=this.playerX+this.player.size>box.x&&this.playerX<box.x+box.width;
+   const verticalContact=bottom>box.y&&this.player.y<box.y+box.height;
+   if(horizontally&&verticalContact&&this.player.vy>0){
     this.player.y=box.y-this.player.size;
     if(enemy.hit()){this.enemyFragments.push(new EnemyFragments(enemy,this.groundY));this.enemies.splice(this.enemies.indexOf(enemy),1);this.score++;document.getElementById('score').textContent=String(this.score);}
     this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,box.y,2.5));
