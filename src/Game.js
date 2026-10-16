@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.37';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.37';
-import { ImpactDust } from './ImpactDust.js?v=0.10.37';
-import { PowerUp } from './PowerUp.js?v=0.10.37';
-import { DeathParticles } from './DeathParticles.js?v=0.10.37';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.37';
-import { Input } from './Input.js?v=0.10.37';
-import { Player } from './Player.js?v=0.10.37';
-import { World } from './World.js?v=0.10.37';
-import { Enemy } from './Enemy.js?v=0.10.37';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.38';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.38';
+import { ImpactDust } from './ImpactDust.js?v=0.10.38';
+import { PowerUp } from './PowerUp.js?v=0.10.38';
+import { DeathParticles } from './DeathParticles.js?v=0.10.38';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.38';
+import { Input } from './Input.js?v=0.10.38';
+import { Player } from './Player.js?v=0.10.38';
+import { World } from './World.js?v=0.10.38';
+import { Enemy } from './Enemy.js?v=0.10.38';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -30,7 +30,7 @@ export class Game {
  restartTutorial(){this.forceTutorialOnce=true;this.reset();}
  reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=this.forceTutorialOnce||!this.tutorialComplete;this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;document.getElementById('score').textContent='0';this.lastTime=null;}
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
- spawnPlatforms(){if(this.tutorialMode)return;const ahead=this.world.distance+this.width+220;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];if(Math.random()<.28){
+ spawnPlatforms(){if(this.tutorialMode)return;/* Generate terrain beyond the longest possible combo before checking enemy positions. */const ahead=this.world.distance+this.width+700;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];if(Math.random()<.28){
   const columns=3+Math.floor(Math.random()*3);
   const rows=3+Math.floor(Math.random()*5);
   const wall=new BreakablePlatform(this.nextPlatformX,columns,rows,this.player.size);
@@ -53,7 +53,7 @@ export class Game {
    if(!this.tutorialMode&&x>=this.nextComboAt&&Math.random()<.65){
     const count=3+Math.floor(Math.random()*3);
     const endX=x+(count-1)*comboSpacing+size;
-    const clearTerrain=[...this.platforms,...this.tutorialWalls].every(p=>p.x>=endX+size||p.x+p.width<=x-size);
+    const clearTerrain=[...this.platforms,...this.tutorialWalls].every(p=>p.x>=endX+this.player.size||p.x+p.width<=x-this.player.size);
     const clearEnemies=this.enemies.every(e=>e.worldX+e.size<=x-size||e.worldX>=endX+size);
     if(clearTerrain&&clearEnemies){
      for(let i=0;i<count;i++)this.enemies.push(new Enemy(x+i*comboSpacing,0,'basic'));
