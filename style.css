@@ -81,3 +81,10 @@ button small{font-size:9px;letter-spacing:.07em}
 .audio-divider{height:1px;background:#475569;margin:2px 0}
 #pausePanel{gap:14px}
 .pause-options .volume-setting{gap:8px}
+
+/* v0.10.32: same Canvas-backed visual approach as the Firefox-safe B control. */
+#jump{background:#334155!important;overflow:hidden;isolation:isolate;appearance:none;-webkit-appearance:none;outline:none!important;box-shadow:none!important}
+#jump:active,#jump:focus,#jump:focus-visible{background:#334155!important;outline:none!important;box-shadow:none!important}
+#jump .jump-visual{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#jump .jump-center{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}
+#jump .jump-center small{font-size:9px}
