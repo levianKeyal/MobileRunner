@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.41';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.41';
-import { ImpactDust } from './ImpactDust.js?v=0.10.41';
-import { PowerUp } from './PowerUp.js?v=0.10.41';
-import { DeathParticles } from './DeathParticles.js?v=0.10.41';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.41';
-import { Input } from './Input.js?v=0.10.41';
-import { Player } from './Player.js?v=0.10.41';
-import { World } from './World.js?v=0.10.41';
-import { Enemy } from './Enemy.js?v=0.10.41';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.42';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.42';
+import { ImpactDust } from './ImpactDust.js?v=0.10.42';
+import { PowerUp } from './PowerUp.js?v=0.10.42';
+import { DeathParticles } from './DeathParticles.js?v=0.10.42';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.42';
+import { Input } from './Input.js?v=0.10.42';
+import { Player } from './Player.js?v=0.10.42';
+import { World } from './World.js?v=0.10.42';
+import { Enemy } from './Enemy.js?v=0.10.42';
 const COMBO_TEST_MODE=true; // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
@@ -47,7 +47,7 @@ export class Game {
    const spacing=Math.round(this.world.speed*(2*570/1800)*.96);
    while(this.nextEnemyX<ahead){
     const count=3+Math.floor(Math.random()*3);
-    for(let i=0;i<count;i++)this.enemies.push(new Enemy(this.nextEnemyX+i*spacing,0,'basic'));
+    const group={startX:this.nextEnemyX,started:false};this.enemies.push(new Enemy(this.nextEnemyX,0,'basic'));for(let i=1;i<count;i++){const e=new Enemy(this.nextEnemyX+i*spacing,0,'jumper');e.jumpHeight=48+i*21;e.jumpWait=Infinity;e.comboGroup=group;e.comboIndex=i;this.enemies.push(e);}
     this.nextEnemyX+=(count-1)*spacing+32+300;
    }
    return;
