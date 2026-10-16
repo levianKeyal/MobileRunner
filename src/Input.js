@@ -2,16 +2,20 @@ export class Input {
  constructor(){
   this.jumpQueued=false;this.jumpHeld=false;this.shootQueue=[];
   const jump=document.getElementById('jump');
+  const jumpCanvas=jump.querySelector('.jump-visual');
+  const jumpCtx=jumpCanvas.getContext('2d');
+  const drawJump=pressed=>{jumpCtx.clearRect(0,0,jumpCanvas.width,jumpCanvas.height);jumpCtx.fillStyle=pressed?'#475569':'#334155';jumpCtx.fillRect(0,0,jumpCanvas.width,jumpCanvas.height);};
+  drawJump(false);
   let jumpPointer=null;
   jump.addEventListener('pointerdown',e=>{
    if(jumpPointer!==null)return;
    e.preventDefault();jumpPointer=e.pointerId;
-   this.jumpHeld=true;this.jumpQueued=true;
+   this.jumpHeld=true;this.jumpQueued=true;drawJump(true);
    try{jump.setPointerCapture(e.pointerId);}catch{}
   });
   const releaseJump=e=>{
    if(e.pointerId!==jumpPointer)return;
-   jumpPointer=null;this.jumpHeld=false;
+   jumpPointer=null;this.jumpHeld=false;drawJump(false);
   };
   jump.addEventListener('pointerup',releaseJump);
   jump.addEventListener('pointercancel',releaseJump);
