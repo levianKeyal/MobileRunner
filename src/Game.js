@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.35';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.35';
-import { ImpactDust } from './ImpactDust.js?v=0.10.35';
-import { PowerUp } from './PowerUp.js?v=0.10.35';
-import { DeathParticles } from './DeathParticles.js?v=0.10.35';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.35';
-import { Input } from './Input.js?v=0.10.35';
-import { Player } from './Player.js?v=0.10.35';
-import { World } from './World.js?v=0.10.35';
-import { Enemy } from './Enemy.js?v=0.10.35';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.36';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.36';
+import { ImpactDust } from './ImpactDust.js?v=0.10.36';
+import { PowerUp } from './PowerUp.js?v=0.10.36';
+import { DeathParticles } from './DeathParticles.js?v=0.10.36';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.36';
+import { Input } from './Input.js?v=0.10.36';
+import { Player } from './Player.js?v=0.10.36';
+import { World } from './World.js?v=0.10.36';
+import { Enemy } from './Enemy.js?v=0.10.36';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -80,7 +80,7 @@ export class Game {
    for(const hit of hits)this.breakBlock(hit.wall,hit.tile);
   }
  }
- resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){if(this.player.stomping)continue;for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;if(x+this.player.size>px&&x<px+tile.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp)this.player.squashTime=this.player.squashDuration;this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
+ resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){if(this.player.stomping)continue;for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;const overlapX=Math.min(x+this.player.size,px+tile.width)-Math.max(x,px);if(overlapX>=Math.min(8,this.player.size*.25)&&previousBottom<=top+1&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp)this.player.squashTime=this.player.squashDuration;this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
  update(dt){if(this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.world.update(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();for(const enemy of this.enemies){
   if(enemy.update(dt))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
  }
@@ -105,7 +105,7 @@ export class Game {
  let pushed=false;
  for(const wall of [...this.platforms,...this.tutorialWalls]){
   if(!wall.solid)continue;
-  if(wall.breakable){if(this.player.stomping)continue;for(const tile of wall.tiles(this.groundY)){const left=tile.x-this.world.distance;const top=tile.y;const overlap=this.player.y+this.player.size>top+2&&this.player.y<top+tile.height&&this.playerX+this.player.size>left&&this.playerX<left+tile.width;if(overlap){this.playerX=Math.min(this.playerX,left-this.player.size);pushed=true;}}continue;}
+  if(wall.breakable){if(this.player.stomping)continue;for(const tile of wall.tiles(this.groundY)){const left=tile.x-this.world.distance;const top=tile.y;const overlap=this.player.y+this.player.size>top+8&&this.player.y<top+tile.height-2&&this.playerX+this.player.size>left+2&&this.playerX<left+tile.width-2;if(overlap){this.playerX=Math.min(this.playerX,left-this.player.size);pushed=true;}}continue;}
   const left=wall.x-this.world.distance;
   const top=this.groundY-wall.offset;
   const sideContact=this.player.y+this.player.size>top+2&&this.player.y<this.groundY&&this.playerX+this.player.size>left&&this.playerX<left+wall.width;
