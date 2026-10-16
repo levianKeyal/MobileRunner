@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.42';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.42';
-import { ImpactDust } from './ImpactDust.js?v=0.10.42';
-import { PowerUp } from './PowerUp.js?v=0.10.42';
-import { DeathParticles } from './DeathParticles.js?v=0.10.42';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.42';
-import { Input } from './Input.js?v=0.10.42';
-import { Player } from './Player.js?v=0.10.42';
-import { World } from './World.js?v=0.10.42';
-import { Enemy } from './Enemy.js?v=0.10.42';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.43';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.43';
+import { ImpactDust } from './ImpactDust.js?v=0.10.43';
+import { PowerUp } from './PowerUp.js?v=0.10.43';
+import { DeathParticles } from './DeathParticles.js?v=0.10.43';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.43';
+import { Input } from './Input.js?v=0.10.43';
+import { Player } from './Player.js?v=0.10.43';
+import { World } from './World.js?v=0.10.43';
+import { Enemy } from './Enemy.js?v=0.10.43';
 const COMBO_TEST_MODE=true; // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
@@ -133,9 +133,9 @@ export class Game {
    const verticalContact=bottom>box.y&&this.player.y<box.y+box.height;
    if(horizontally&&verticalContact&&this.player.vy>0){
     this.player.y=box.y-this.player.size;
-    if(enemy.hit()){this.enemyFragments.push(new EnemyFragments(enemy,this.groundY));this.enemies.splice(this.enemies.indexOf(enemy),1);this.score++;document.getElementById('score').textContent=String(this.score);}
+    const defeated=enemy.hit();if(defeated){this.enemyFragments.push(new EnemyFragments(enemy,this.groundY));this.enemies.splice(this.enemies.indexOf(enemy),1);this.score++;document.getElementById('score').textContent=String(this.score);}
     this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,box.y,2.5));
-    this.player.bounceFromStomp();
+    this.player.bounceFromStomp(defeated&&enemy.type==='jumper'&&enemy.comboGroup?Math.min(180,enemy.comboIndex*45):0);
     this.jumpApexY=this.player.y;
     break;
    }
