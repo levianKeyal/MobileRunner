@@ -1,13 +1,13 @@
 // World-space fragments remain on the ground until the camera has passed them.
 export class EnemyFragments {
  constructor(enemy,groundY){
-  this.groundY=groundY-enemy.surfaceOffset;
+  this.groundY=groundY;
   this.worldX=enemy.worldX;
   this.size=enemy.size;
   this.age=0;
   const base=(enemy.type==='shooter'||enemy.type==='burst')?'#38bdf8':'#ef4444';
   const accents=enemy.type==='burst'?['#b91c1c','#f87171']:enemy.type==='jumper'?['#2563eb','#93c5fd']:[base,'#ffffff'];
-  const top=this.groundY-enemy.size-enemy.jumpOffset;
+  const top=groundY-enemy.surfaceOffset-enemy.size-enemy.jumpOffset;
   this.fragments=Array.from({length:18},(_,i)=>{
    const angle=Math.random()*Math.PI*2;
    const speed=100+Math.random()*225;
@@ -28,7 +28,7 @@ export class EnemyFragments {
     else{p.vy=0;p.vx=0;p.spin=0;p.rest=true;}
    }
   }
-  if(this.age>=3.2)for(const p of this.fragments){p.y=Math.min(p.y,this.groundY-p.size);p.vx=0;p.vy=0;p.spin=0;p.rest=true;}
+  if(this.age>=3.2)for(const p of this.fragments){p.y=this.groundY-p.size;p.vx=0;p.vy=0;p.spin=0;p.rest=true;}
  }
  isOffscreen(cameraX){return this.fragments.every(p=>p.x+p.size<cameraX);}
  draw(ctx,cameraX){
