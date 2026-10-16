@@ -6,7 +6,7 @@ export class Player {
  jump(){if(this.jumpsUsed>=this.maxJumps)return false;this.vy=-680;this.jumpCut=false;this.grounded=false;this.jumpsUsed++;if(this.jumpsUsed===2){this.spinning=true;this.spinProgress=0;this.rotation=0;}return true;}
  setJumpHeld(held){if(!held&&!this.jumpCut&&this.vy<0){this.vy*=.42;this.jumpCut=true;}}
  startStomp(){if(this.grounded||(!this.stompChainReady&&(this.jumpsUsed<2||this.stompUsed)))return false;this.stomping=true;this.stompUsed=true;this.stompChainReady=false;this.spinning=false;this.rotation=0;this.vy=780;this.jumpCut=true;return true;}
- bounceFromStomp(){this.stomping=false;this.stompChainReady=true;this.vy=-570;this.grounded=false;this.squashTime=this.squashDuration;this.jumpCut=true;}
+ bounceFromStomp(boost=0){this.stomping=false;this.stompChainReady=true;this.vy=-(570+boost);this.grounded=false;this.squashTime=this.squashDuration;this.jumpCut=true;}
  land(surfaceY){this.y=surfaceY-this.size;this.vy=0;this.grounded=true;this.jumpsUsed=0;this.stomping=false;this.stompUsed=false;this.stompChainReady=false;}
  shoot(){this.flash=.13;}
  update(dt){this.vy+=1800*dt;if(this.stomping)this.vy=Math.min(this.vy,1100);this.y+=this.vy*dt;this.squashTime=Math.max(0,this.squashTime-dt);this.grounded=false;if(this.spinning){this.spinProgress=Math.min(1,this.spinProgress+dt/this.spinDuration);this.rotation=this.spinProgress*Math.PI*2;if(this.spinProgress>=1){this.spinning=false;this.rotation=0;}}this.flash=Math.max(0,this.flash-dt);this.invulnerable=Math.max(0,this.invulnerable-dt);}
