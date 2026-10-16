@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.38';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.38';
-import { ImpactDust } from './ImpactDust.js?v=0.10.38';
-import { PowerUp } from './PowerUp.js?v=0.10.38';
-import { DeathParticles } from './DeathParticles.js?v=0.10.38';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.38';
-import { Input } from './Input.js?v=0.10.38';
-import { Player } from './Player.js?v=0.10.38';
-import { World } from './World.js?v=0.10.38';
-import { Enemy } from './Enemy.js?v=0.10.38';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.39';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.39';
+import { ImpactDust } from './ImpactDust.js?v=0.10.39';
+import { PowerUp } from './PowerUp.js?v=0.10.39';
+import { DeathParticles } from './DeathParticles.js?v=0.10.39';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.39';
+import { Input } from './Input.js?v=0.10.39';
+import { Player } from './Player.js?v=0.10.39';
+import { World } from './World.js?v=0.10.39';
+import { Enemy } from './Enemy.js?v=0.10.39';
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -100,13 +100,9 @@ export class Game {
     }
    }
   }
-  if(goingUp&&hits.length){
-   // Break all tiles struck by the head at the nearest ceiling, then stop rising.
-   const ceiling=Math.max(...hits.map(hit=>hit.edge));
-   for(const hit of hits)if(Math.abs(hit.edge-ceiling)<2)this.breakBlock(hit.wall,hit.tile);
-   player.y=ceiling;
-   player.vy=0;
-   player.jumpCut=true;
+  if(goingUp){
+   // Break every tile crossed by the player's head without changing jump momentum.
+   for(const hit of hits)this.breakBlock(hit.wall,hit.tile);
   }else if(goingDown){
    // Every crossed row breaks; stomp continues without slowing or landing.
    for(const hit of hits)this.breakBlock(hit.wall,hit.tile);
