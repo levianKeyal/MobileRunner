@@ -1,0 +1,148 @@
+MOBILERUNNER — GUÍA PARA INTEGRARLO EN UNA PÁGINA WEB
+Versión de referencia: 0.10.71
+Repositorio: https://github.com/levianKeyal/MobileRunner
+Demo: https://leviankeyal.github.io/MobileRunner/
+
+1. REQUISITOS
+---------------
+- Navegador moderno compatible con JavaScript ES Modules y Canvas 2D.
+- Servidor HTTP/HTTPS para alojar el juego. No requiere instalar dependencias.
+- Se recomienda un teléfono Android en orientación vertical para probar controles.
+
+2. OPCIÓN A — INSERTAR EL JUEGO EXISTENTE (RECOMENDADA)
+------------------------------------------------------
+Agrega este fragmento al HTML de tu página:
+
+<iframe
+  src="https://leviankeyal.github.io/MobileRunner/"
+  title="MobileRunner"
+  allow="autoplay"
+  loading="lazy"
+  style="width:100%;height:100dvh;border:0;display:block"
+></iframe>
+
+El iframe aísla los estilos y controles del juego del resto del sitio.
+Puedes ajustar el ancho y alto del iframe. Para que ocupe toda la pantalla,
+usa 100vw y 100dvh (o los tamaños de tu contenedor).
+
+Esta opción carga el juego desde GitHub Pages: necesitas conexión a Internet,
+y las futuras actualizaciones de esa URL se reflejarán en el contenido insertado.
+No copies solo el código de index.html dentro de tu página: sus estilos
+globales y sus identificadores pueden entrar en conflicto con tu sitio.
+
+3. OPCIÓN B — ALOJAR UNA COPIA DEL JUEGO
+----------------------------------------
+1) Descarga el ZIP del repositorio desde GitHub (Code > Download ZIP) o clónalo.
+2) Copia la carpeta del juego al servidor de tu página, manteniendo:
+   - index.html
+   - style.css
+   - src/ (todos los archivos)
+   - assets/ (todos los archivos)
+3) Por ejemplo, publícala bajo https://tusitio.com/juegos/mobilerunner/
+4) Comprueba que abre:
+   https://tusitio.com/juegos/mobilerunner/index.html
+5) Inserta la copia con un iframe:
+   <iframe src="/juegos/mobilerunner/index.html"
+           title="MobileRunner"
+           style="width:100%;height:100dvh;border:0"></iframe>
+
+No modifiques la estructura de carpetas sin actualizar las rutas de
+importación de JavaScript y los archivos de audio.
+
+4. EJECUTARLO LOCALMENTE
+-------------------------
+Abre una terminal dentro de la carpeta raíz del proyecto.
+
+Con Python instalado:
+    python -m http.server 8000
+
+En Windows, si 'python' no está disponible:
+    py -m http.server 8000
+
+Después abre http://localhost:8000/ en Chrome o Firefox.
+
+Para probarlo desde el teléfono conectado a la misma red Wi-Fi, el servidor
+debe escuchar en la interfaz de red apropiada, el firewall debe permitir
+el acceso y debes abrir http://IP-DE-TU-PC:8000/ desde el teléfono.
+Ten en cuenta que ciertas APIs (como la vibración) pueden requerir HTTPS
+o un contexto seguro; para una prueba real, usa GitHub Pages o HTTPS.
+
+No ejecutes index.html con doble clic (file://), porque los módulos ES
+pueden ser bloqueados por la seguridad del navegador.
+
+5. ARCHIVOS IMPORTANTES
+------------------------
+index.html          Estructura de la pantalla, botones, resultados y pausa.
+style.css           Presentación y adaptación a pantalla móvil.
+src/main.js         Inicia el juego.
+src/Game.js         Bucle principal, reglas, colisiones y dibujo.
+src/Input.js        Controles táctiles y teclado; 8 sectores de disparo.
+src/Player.js       Física y estados del jugador.
+src/World.js        Escenario y desplazamiento.
+src/Enemy.js        Enemigos terrestres.
+src/FlyingEnemy.js  Enemigos voladores.
+src/AreaBoss.js     Jefe de área.
+src/Music.js        Música.
+src/SoundEffects.js Efectos de sonido.
+src/               Otros módulos: plataformas, objetos y partículas.
+assets/             Archivos multimedia usados por el juego.
+
+6. CONTROLES
+-------------
+A: saltar, doble salto y stomp según el momento de la partida.
+B: disparar en 8 direcciones; tocar un sector o arrastrar entre sectores.
+PAUSA: suspender y continuar; configurar música y SFX.
+Teclado: espacio/flecha arriba para saltar, X para disparar a la derecha.
+
+7. MODIFICAR Y PUBLICAR UNA NUEVA VERSIÓN
+-----------------------------------------
+1) Edita los archivos correspondientes en src/, index.html o style.css.
+2) Prueba localmente mediante un servidor HTTP.
+3) Si incrementas la versión, sincroniza los parámetros ?v= de:
+   - index.html (scripts y hoja de estilos)
+   - src/main.js (importación de Game)
+   - src/Game.js (importaciones de otros módulos)
+   y el texto de versión mostrado en index.html.
+4) Haz commit y push a GitHub.
+5) Espera a que GitHub Pages publique la actualización.
+6) Prueba en Chrome y Firefox Android; fuerza recarga si hay caché.
+
+8. PROBLEMAS FRECUENTES
+-----------------------
+Pantalla en blanco:
+- Abre la consola del navegador y revisa errores de importación.
+- Comprueba que todas las rutas y archivos de src/ y assets/ existen.
+- Asegúrate de usar HTTP/HTTPS, no file://.
+
+No se escucha la música:
+- Los navegadores móviles pueden exigir interacción del usuario antes
+  de reproducir audio. Comprueba también el volumen y las opciones.
+
+No vibra el teléfono:
+- La vibración es opcional y depende del navegador. Firefox Android
+  puede no implementarla; los efectos visuales siguen funcionando.
+
+La página anfitriona se ve afectada por el juego:
+- Utiliza un iframe en vez de pegar directamente el HTML/CSS del juego.
+
+Se ve una versión anterior:
+- Espera el despliegue de GitHub Pages, recarga sin caché y comprueba
+  el número de versión visible en la interfaz.
+
+9. AUDIO Y DISTRIBUCIÓN
+-----------------------
+El proyecto contiene audio procedente de terceros. Verifica los términos
+de licencia y los requisitos de atribución antes de redistribuirlo o
+incluirlo en un producto comercial. Fuentes de referencia: Pixabay y
+ZapSplat. No presupongas que el código y los recursos comparten licencia.
+
+10. LISTA DE VERIFICACIÓN DE ENTREGA
+-------------------------------------
+[ ] Abre el juego desde la URL definitiva.
+[ ] Los botones A, B y PAUSA responden al tacto.
+[ ] Los 8 sectores de disparo funcionan.
+[ ] La música y los SFX se comportan correctamente.
+[ ] Reiniciar después de morir funciona.
+[ ] No hay errores en la consola.
+[ ] El iframe no afecta el diseño del sitio.
+[ ] Se revisaron las licencias de los recursos de audio.
