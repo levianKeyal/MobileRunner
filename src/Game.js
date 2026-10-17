@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.58';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.58';
-import { ImpactDust } from './ImpactDust.js?v=0.10.58';
-import { PowerUp } from './PowerUp.js?v=0.10.58';
-import { DeathParticles } from './DeathParticles.js?v=0.10.58';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.58';
-import { Input } from './Input.js?v=0.10.58';
-import { Player } from './Player.js?v=0.10.58';
-import { World } from './World.js?v=0.10.58';
-import { Enemy } from './Enemy.js?v=0.10.58';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.58';
-import { AreaBoss } from './AreaBoss.js?v=0.10.58';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.59';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.59';
+import { ImpactDust } from './ImpactDust.js?v=0.10.59';
+import { PowerUp } from './PowerUp.js?v=0.10.59';
+import { DeathParticles } from './DeathParticles.js?v=0.10.59';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.59';
+import { Input } from './Input.js?v=0.10.59';
+import { Player } from './Player.js?v=0.10.59';
+import { World } from './World.js?v=0.10.59';
+import { Enemy } from './Enemy.js?v=0.10.59';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.59';
+import { AreaBoss } from './AreaBoss.js?v=0.10.59';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -187,7 +187,7 @@ export class Game {
   }
   if(this.boss&&this.bossLocked)this.boss.worldX=this.world.distance+this.width*.75-this.boss.size/2;
  }
- update(dt){this.bossStun=Math.max(0,this.bossStun-dt);if(this.bossStun>0){this.input.consumeJump();this.input.clearShoot();}if(this.bossStun<=0&&this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))if(this.bossStun<=0)this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(BOSS_TEST_MODE){this.updateBoss(dt);if(this.boss&&this.bossLocked){const action=this.boss.update(dt);if(action.stomp){this.screenShake=.35;this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size/2,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.15,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.85,this.groundY,2.5));if(this.player.grounded){this.bossStun=1.5;this.input.consumeJump();this.input.clearShoot();}}if(action.shotY!==undefined){const x=this.boss.worldX-this.world.distance-12;this.enemyBullets.push({x,y:action.shotY-7,width:22,height:14,speed:290,bossShot:true});}}}if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();if(!this.tutorialMode)this.spawnFlyers();for(const enemy of this.enemies){
+ update(dt){this.bossStun=Math.max(0,this.bossStun-dt);if(this.bossStun>0){this.input.consumeJump();this.input.clearShoot();}if(this.bossStun<=0&&this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))if(this.bossStun<=0)this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(BOSS_TEST_MODE){this.updateBoss(dt);if(this.boss&&this.bossLocked){const action=this.boss.update(dt);if(action.stomp){this.screenShake=.35;this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size/2,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.15,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.85,this.groundY,2.5));if(this.player.grounded){this.bossStun=1.5;this.input.consumeJump();this.input.clearShoot();}}if(action.shotY!==undefined){const x=this.boss.worldX-this.world.distance+this.boss.size/2-11;this.enemyBullets.push({x,y:action.shotY-7,width:22,height:14,speed:290,bossShot:true});}}}if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();if(!this.tutorialMode)this.spawnFlyers();for(const enemy of this.enemies){
   if(enemy.comboGroup&&!enemy.comboGroup.started&&enemy.comboGroup.startX-this.world.distance<=this.playerX+70){enemy.comboGroup.started=true;for(const e of this.enemies)if(e.comboGroup===enemy.comboGroup)e.jumpWait=e.comboIndex*.61+.12;}
   if(enemy.update(dt,enemy.flying?this.platforms:undefined))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
  }
