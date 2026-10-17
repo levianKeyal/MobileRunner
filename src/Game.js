@@ -1,13 +1,13 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.47';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.47';
-import { ImpactDust } from './ImpactDust.js?v=0.10.47';
-import { PowerUp } from './PowerUp.js?v=0.10.47';
-import { DeathParticles } from './DeathParticles.js?v=0.10.47';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.47';
-import { Input } from './Input.js?v=0.10.47';
-import { Player } from './Player.js?v=0.10.47';
-import { World } from './World.js?v=0.10.47';
-import { Enemy } from './Enemy.js?v=0.10.47';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.48';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.48';
+import { ImpactDust } from './ImpactDust.js?v=0.10.48';
+import { PowerUp } from './PowerUp.js?v=0.10.48';
+import { DeathParticles } from './DeathParticles.js?v=0.10.48';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.48';
+import { Input } from './Input.js?v=0.10.48';
+import { Player } from './Player.js?v=0.10.48';
+import { World } from './World.js?v=0.10.48';
+import { Enemy } from './Enemy.js?v=0.10.48';
 const COMBO_TEST_MODE=true; // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
@@ -176,7 +176,7 @@ export class Game {
  this.enemies=this.enemies.filter(e=>e.worldX+e.size>this.world.distance);for(const enemy of this.enemies){if(intersects(playerBox,enemy.box(enemy.worldX-this.world.distance,this.groundY))){this.receiveHit();if(this.gameOver)return;}}}
  draw(){this.world.draw(this.ctx,this.width,this.height,this.groundY);for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){p.draw(this.ctx,this.world.distance,this.groundY);continue;}const x=p.x-this.world.distance;const y=this.groundY-p.offset;this.ctx.fillStyle=p.solid?'#475569':'#64748b';this.ctx.fillRect(x,y,p.width,p.solid?p.offset:14);this.ctx.fillStyle=p.solid?'#cbd5e1':'#94a3b8';this.ctx.fillRect(x,y,p.width,4);this.ctx.fillStyle='#334155';for(let stripe=x+12;stripe<x+p.width-8;stripe+=28)this.ctx.fillRect(stripe,y+7,13,3);}for(const item of this.energyItems)item.draw(this.ctx);for(const enemy of this.enemies)enemy.draw(this.ctx,enemy.worldX-this.world.distance,this.groundY);for(const dust of this.impactDust)dust.draw(this.ctx,this.world.distance);for(const fragments of this.enemyFragments)fragments.draw(this.ctx,this.world.distance);for(const debris of this.blockDebris)debris.draw(this.ctx,this.world.distance);if(!this.gameOver)this.player.draw(this.ctx,this.playerX);if(this.deathParticles)this.deathParticles.draw(this.ctx);this.ctx.fillStyle='#fde047';for(const bullet of this.bullets)this.ctx.fillRect(bullet.x,bullet.y,bullet.width,bullet.height);this.ctx.fillStyle='#fb923c';for(const bullet of this.enemyBullets)this.ctx.fillRect(bullet.x,bullet.y,bullet.width,bullet.height);if(this.comboCountdown||this.comboKills>=2&&this.comboDisplayTime>0){
  const age=.55-this.comboDisplayTime;
- const alpha=this.comboCountdown?1:Math.max(0,Math.min(1,this.comboDisplayTime/.55));
+ const alpha=this.comboCountdown?(this.comboCountdownValue===0?Math.max(0,Math.min(1,this.comboZeroHold/.45)):1):Math.max(0,Math.min(1,this.comboDisplayTime/.55));
  const punch=1+.38*Math.pow(Math.max(0,1-age/.2),2);
  this.ctx.save();
  this.ctx.translate(this.width/2,this.height*.43);
