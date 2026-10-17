@@ -1,17 +1,18 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.68';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.68';
-import { ImpactDust } from './ImpactDust.js?v=0.10.68';
-import { PowerUp } from './PowerUp.js?v=0.10.68';
-import { DeathParticles } from './DeathParticles.js?v=0.10.68';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.68';
-import { Input } from './Input.js?v=0.10.68';
-import { Player } from './Player.js?v=0.10.68';
-import { World } from './World.js?v=0.10.68';
-import { Enemy } from './Enemy.js?v=0.10.68';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.68';
-import { AreaBoss } from './AreaBoss.js?v=0.10.68';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.69';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.69';
+import { ImpactDust } from './ImpactDust.js?v=0.10.69';
+import { PowerUp } from './PowerUp.js?v=0.10.69';
+import { DeathParticles } from './DeathParticles.js?v=0.10.69';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.69';
+import { Input } from './Input.js?v=0.10.69';
+import { Player } from './Player.js?v=0.10.69';
+import { World } from './World.js?v=0.10.69';
+import { Enemy } from './Enemy.js?v=0.10.69';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.69';
+import { AreaBoss } from './AreaBoss.js?v=0.10.69';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=false; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
+const vibrate=pattern=>{try{if(typeof navigator!=='undefined'&&typeof navigator.vibrate==='function')navigator.vibrate(pattern);}catch{}};
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -30,7 +31,7 @@ export class Game {
  readTutorialComplete(){try{return localStorage.getItem('mobileRunner.tutorialComplete')==='true';}catch{return false;}}
  finishTutorial(){this.tutorialComplete=true;try{localStorage.setItem('mobileRunner.tutorialComplete','true');}catch{}}
  loadStats(){try{const s=JSON.parse(localStorage.getItem('mobileRunner.stats')||'{}');return {maxKOs:Number(s.maxKOs)||0,maxMeters:Number(s.maxMeters)||0,deaths:Number(s.deaths)||0};}catch{return {maxKOs:0,maxMeters:0,deaths:0};}}
- die(){if(this.gameOver)return;if(this.boss&&this.bossLocked)this.boss.celebrateVictory();this.gameOver=true;this.deathParticles=new DeathParticles(this.playerX,this.player.y,this.player.size,this.groundY);this.deathPhase='exploding';this.deathScrollElapsed=0;this.deathScrollStart=this.world.distance;this.deathScrollSpeed=this.world.speed;const meters=Math.floor(this.world.distance/10);this.stats.maxKOs=Math.max(this.stats.maxKOs,this.score);this.stats.maxMeters=Math.max(this.stats.maxMeters,meters);this.stats.deaths++;try{localStorage.setItem('mobileRunner.stats',JSON.stringify(this.stats));}catch{}document.getElementById('finalKOs').textContent=this.score;document.getElementById('maxKOs').textContent=this.stats.maxKOs;document.getElementById('finalMeters').textContent=meters+' m';document.getElementById('maxMeters').textContent=this.stats.maxMeters+' m';document.getElementById('totalDeaths').textContent=this.stats.deaths;document.getElementById('controls').hidden=true;this.input.consumeJump();this.input.clearShoot();}
+ die(){if(this.gameOver)return;vibrate([110,55,140]);if(this.boss&&this.bossLocked)this.boss.celebrateVictory();this.gameOver=true;this.deathParticles=new DeathParticles(this.playerX,this.player.y,this.player.size,this.groundY);this.deathPhase='exploding';this.deathScrollElapsed=0;this.deathScrollStart=this.world.distance;this.deathScrollSpeed=this.world.speed;const meters=Math.floor(this.world.distance/10);this.stats.maxKOs=Math.max(this.stats.maxKOs,this.score);this.stats.maxMeters=Math.max(this.stats.maxMeters,meters);this.stats.deaths++;try{localStorage.setItem('mobileRunner.stats',JSON.stringify(this.stats));}catch{}document.getElementById('finalKOs').textContent=this.score;document.getElementById('maxKOs').textContent=this.stats.maxKOs;document.getElementById('finalMeters').textContent=meters+' m';document.getElementById('maxMeters').textContent=this.stats.maxMeters+' m';document.getElementById('totalDeaths').textContent=this.stats.deaths;document.getElementById('controls').hidden=true;this.input.consumeJump();this.input.clearShoot();}
  restartTutorial(){this.forceTutorialOnce=true;this.reset();}
  reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.comboKills=0;this.comboDisplayTime=0;this.comboIdleTime=0;this.comboCountdown=false;this.comboCountdownValue=0;this.comboCountdownClock=0;this.comboZeroHold=0;this.screenShake=0;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=!COMBO_TEST_MODE&&!BOSS_TEST_MODE&&(this.forceTutorialOnce||!this.tutorialComplete);this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;this.postComboJumpCap=null;this.boss=null;this.bossLocked=false;this.bossDefeated=0;this.nextBossDistance=10000;this.nextBossKOs=30;this.bossApproaching=false;this.bossStun=0;this.bossComboGroup=null;this.bossComboIndex=0;this.bossComboTimer=3;this.bossComboCount=0;this.bossComboStaircase=false;this.nextFlyerX=this.width+950;this.nextFlyerBAt=this.width+1350;this.lastEnergySpawnTime=-Infinity;document.getElementById('score').textContent='0';this.lastTime=null;}
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
@@ -198,7 +199,7 @@ export class Game {
    for(const hit of hits)this.breakBlock(hit.wall,hit.tile);
   }
  }
- resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){if(this.player.stomping)continue;for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;const overlapX=Math.min(x+this.player.size,px+tile.width)-Math.max(x,px);if(overlapX>=Math.min(8,this.player.size*.25)&&previousBottom<=top+1&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp)this.player.squashTime=this.player.squashDuration;this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
+ resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){if(this.player.stomping)continue;for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;const overlapX=Math.min(x+this.player.size,px+tile.width)-Math.max(x,px);if(overlapX>=Math.min(8,this.player.size*.25)&&previousBottom<=top+1&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp){this.player.squashTime=this.player.squashDuration;vibrate(35);}this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
  updateBoss(dt){
   if(!this.boss&&!this.tutorialMode&&this.world.distance>=this.nextBossDistance&&this.score>=this.nextBossKOs){
    this.boss=new AreaBoss(this.world.distance+this.width+30,this.groundY,this.player.size);
@@ -231,7 +232,7 @@ export class Game {
    if(horizontally&&verticalContact&&this.player.vy>0){
     this.player.y=box.y-this.player.size;
     const defeated=enemy.hit();if(defeated){this.enemyFragments.push(new EnemyFragments(enemy,this.groundY));this.enemies.splice(this.enemies.indexOf(enemy),1);this.score++;document.getElementById('score').textContent=String(this.score);if(this.comboCountdown){this.comboKills=0;this.comboCountdown=false;}this.comboKills++;this.comboIdleTime=0;if(this.comboKills>=2)this.comboDisplayTime=.55;}
-    this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,box.y,2.5));
+    this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,box.y,2.5));vibrate(35);
     this.player.bounceFromStomp(defeated&&enemy.type==='jumper'&&enemy.comboGroup?Math.min(180,enemy.comboIndex*45):0);
     this.jumpApexY=this.player.y;
     break;
