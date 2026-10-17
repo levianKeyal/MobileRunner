@@ -1,14 +1,14 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.48';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.48';
-import { ImpactDust } from './ImpactDust.js?v=0.10.48';
-import { PowerUp } from './PowerUp.js?v=0.10.48';
-import { DeathParticles } from './DeathParticles.js?v=0.10.48';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.48';
-import { Input } from './Input.js?v=0.10.48';
-import { Player } from './Player.js?v=0.10.48';
-import { World } from './World.js?v=0.10.48';
-import { Enemy } from './Enemy.js?v=0.10.48';
-const COMBO_TEST_MODE=true; // Temporary stomp-combo test level. Set false to restore normal gameplay.
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.49';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.49';
+import { ImpactDust } from './ImpactDust.js?v=0.10.49';
+import { PowerUp } from './PowerUp.js?v=0.10.49';
+import { DeathParticles } from './DeathParticles.js?v=0.10.49';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.49';
+import { Input } from './Input.js?v=0.10.49';
+import { Player } from './Player.js?v=0.10.49';
+import { World } from './World.js?v=0.10.49';
+import { Enemy } from './Enemy.js?v=0.10.49';
+const COMBO_TEST_MODE=false; // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
 export class Game {
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d');this.input=new Input();this.width=0;this.height=0;this.groundY=0;this.lastTime=null;this.resizeCanvas();this.tutorialComplete=this.readTutorialComplete();this.recordFirstStart();this.forceTutorialOnce=false;this.gameOver=false;this.stats=this.loadStats();this.reset();document.getElementById('pause').addEventListener('click',()=>this.setPaused(true));document.getElementById('resume').addEventListener('click',()=>this.setPaused(false));document.getElementById('restart').addEventListener('click',()=>this.reset());document.getElementById('debugTutorial').addEventListener('click',()=>this.restartTutorial());window.addEventListener('resize',()=>this.resize());document.addEventListener('visibilitychange',()=>{this.lastTime=null;});requestAnimationFrame(t=>this.frame(t));}
@@ -29,9 +29,9 @@ export class Game {
  loadStats(){try{const s=JSON.parse(localStorage.getItem('mobileRunner.stats')||'{}');return {maxKOs:Number(s.maxKOs)||0,maxMeters:Number(s.maxMeters)||0,deaths:Number(s.deaths)||0};}catch{return {maxKOs:0,maxMeters:0,deaths:0};}}
  die(){if(this.gameOver)return;this.gameOver=true;this.deathParticles=new DeathParticles(this.playerX,this.player.y,this.player.size,this.groundY);this.deathPhase='exploding';this.deathScrollElapsed=0;this.deathScrollStart=this.world.distance;this.deathScrollSpeed=this.world.speed;const meters=Math.floor(this.world.distance/10);this.stats.maxKOs=Math.max(this.stats.maxKOs,this.score);this.stats.maxMeters=Math.max(this.stats.maxMeters,meters);this.stats.deaths++;try{localStorage.setItem('mobileRunner.stats',JSON.stringify(this.stats));}catch{}document.getElementById('finalKOs').textContent=this.score;document.getElementById('maxKOs').textContent=this.stats.maxKOs;document.getElementById('finalMeters').textContent=meters+' m';document.getElementById('maxMeters').textContent=this.stats.maxMeters+' m';document.getElementById('totalDeaths').textContent=this.stats.deaths;document.getElementById('controls').hidden=true;this.input.consumeJump();this.input.clearShoot();}
  restartTutorial(){this.forceTutorialOnce=true;this.reset();}
- reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.comboKills=0;this.comboDisplayTime=0;this.comboIdleTime=0;this.comboCountdown=false;this.comboCountdownValue=0;this.comboCountdownClock=0;this.comboZeroHold=0;this.screenShake=0;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=!COMBO_TEST_MODE&&(this.forceTutorialOnce||!this.tutorialComplete);this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;document.getElementById('score').textContent='0';this.lastTime=null;}
+ reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.comboKills=0;this.comboDisplayTime=0;this.comboIdleTime=0;this.comboCountdown=false;this.comboCountdownValue=0;this.comboCountdownClock=0;this.comboZeroHold=0;this.screenShake=0;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=!COMBO_TEST_MODE&&(this.forceTutorialOnce||!this.tutorialComplete);this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;this.postComboJumpCap=null;document.getElementById('score').textContent='0';this.lastTime=null;}
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
- spawnPlatforms(){if(COMBO_TEST_MODE||this.tutorialMode)return;/* Generate terrain beyond the longest possible combo before checking enemy positions. */const ahead=this.world.distance+this.width+700;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];if(Math.random()<.28){
+ spawnPlatforms(){if(COMBO_TEST_MODE||this.tutorialMode)return;/* Generate terrain beyond the longest possible combo before checking enemy positions. */const ahead=this.world.distance+this.width+700;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=Math.random()<.23?420+Math.random()*180:145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];if(Math.random()<.28){
   const columns=3+Math.floor(Math.random()*3);
   const rows=3+Math.floor(Math.random()*5);
   const wall=new BreakablePlatform(this.nextPlatformX,columns,rows,this.player.size);
@@ -60,14 +60,35 @@ export class Game {
    const x=this.nextEnemyX;
    const arrivalTime=this.elapsedTime+Math.max(0,(x-this.world.distance-this.width)/this.world.speed);
    if(this.tutorialMode&&arrivalTime>=20){this.nextEnemyX=x+110+Math.random()*180;continue;}
-   // Occasional groups of 3-5 stationary ground enemies, paced to the stomp rebound.
+   // Reserve the entire combo corridor on ground or on one sufficiently long platform.
    if(!this.tutorialMode&&x>=this.nextComboAt&&Math.random()<.65){
     const count=3+Math.floor(Math.random()*3);
-    const endX=x+(count-1)*comboSpacing+size;
-    const clearTerrain=[...this.platforms,...this.tutorialWalls].every(p=>p.x>=endX+this.player.size||p.x+p.width<=x-this.player.size);
-    const clearEnemies=this.enemies.every(e=>e.worldX+e.size<=x-size||e.worldX>=endX+size);
+    const lastX=x+(count-1)*comboSpacing;
+    const endX=lastX+size;
+    const padding=this.player.size;
+    const candidates=this.platforms.filter(p=>{
+     const entry=p.solid?this.player.size*2:12;
+     return x>=p.x+entry&&endX<=p.x+p.width-12;
+    });
+    const platform=candidates.length?candidates[Math.floor(Math.random()*candidates.length)]:null;
+    const clearTerrain=[...this.platforms,...this.tutorialWalls].every(p=>
+     p===platform||p.x>=endX+padding||p.x+p.width<=x-padding);
+    const clearEnemies=this.enemies.every(e=>e.worldX+e.size<=x-padding||e.worldX>=endX+padding);
     if(clearTerrain&&clearEnemies){
-     for(let i=0;i<count;i++)this.enemies.push(new Enemy(x+i*comboSpacing,0,'basic'));
+     const staircase=Math.random()<.5;
+     const group={startX:x,started:false};
+     for(let i=0;i<count;i++){
+      const type=staircase&&i>0?'jumper':'basic';
+      const e=new Enemy(x+i*comboSpacing,platform?platform.offset:0,type);
+      if(type==='jumper'){
+       e.jumpHeight=48+i*21;
+       e.jumpWait=Infinity;
+       e.comboGroup=group;
+       e.comboIndex=i;
+      }
+      this.enemies.push(e);
+     }
+     if(staircase)this.postComboJumpCap=48+(count-1)*21;
      this.nextEnemyX=endX+180+Math.random()*110;
      this.nextComboAt=this.nextEnemyX+850+Math.random()*700;
      continue;
@@ -80,7 +101,9 @@ export class Game {
    const selected=solid||(platforms.length&&Math.random()<.55?platforms[Math.floor(Math.random()*platforms.length)]:null);
    const roll=Math.random();
    const type=this.tutorialMode?(arrivalTime<10?'basic':arrivalTime<15?'shooter':'burst'):(roll<.48?'basic':roll<.72?'shooter':roll<.85?'burst':'jumper');
-   this.enemies.push(new Enemy(x,selected?selected.offset:0,type));
+   const spawned=new Enemy(x,selected?selected.offset:0,type);
+   if(type==='jumper'&&this.postComboJumpCap!==null)spawned.jumpHeight=Math.min(spawned.jumpHeight,this.postComboJumpCap);
+   this.enemies.push(spawned);
    this.nextEnemyX+=110+Math.random()*180;
   }
  }
@@ -121,7 +144,7 @@ export class Game {
  }
  resolveLanding(previousBottom){const x=this.playerX;const foot=this.player.y+this.player.size;if(this.player.vy<0)return;let landingY=this.groundY;for(const p of [...this.platforms,...this.tutorialWalls]){if(p.breakable){if(this.player.stomping)continue;for(const tile of p.tiles(this.groundY)){const px=tile.x-this.world.distance;const top=tile.y;const overlapX=Math.min(x+this.player.size,px+tile.width)-Math.max(x,px);if(overlapX>=Math.min(8,this.player.size*.25)&&previousBottom<=top+1&&foot>=top&&top<landingY)landingY=top;}continue;}const px=p.x-this.world.distance;const top=this.groundY-p.offset;if(x+this.player.size>px&&x<px+p.width&&previousBottom<=top+3&&foot>=top&&top<landingY)landingY=top;}if(previousBottom<=landingY+3&&foot>=landingY){const wasAirborne=this.player.jumpsUsed>0&&!this.player.grounded;const wasStomp=this.player.stomping;this.player.land(landingY);if(wasAirborne){const fallDistance=Math.max(0,landingY-this.player.size-this.jumpApexY);const intensity=wasStomp?2.5:Math.max(.35,Math.min(2.5,fallDistance/115));if(wasStomp)this.player.squashTime=this.player.squashDuration;this.impactDust.push(new ImpactDust(this.world.distance+this.playerX+this.player.size/2,landingY,intensity));this.jumpApexY=this.player.y;}}}
  update(dt){if(this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();for(const enemy of this.enemies){
-  if(COMBO_TEST_MODE&&enemy.comboGroup&&!enemy.comboGroup.started&&enemy.comboGroup.startX-this.world.distance<=this.playerX+70){enemy.comboGroup.started=true;for(const e of this.enemies)if(e.comboGroup===enemy.comboGroup)e.jumpWait=e.comboIndex*.61+.12;}
+  if(enemy.comboGroup&&!enemy.comboGroup.started&&enemy.comboGroup.startX-this.world.distance<=this.playerX+70){enemy.comboGroup.started=true;for(const e of this.enemies)if(e.comboGroup===enemy.comboGroup)e.jumpWait=e.comboIndex*.61+.12;}
   if(enemy.update(dt))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
  }
  this.impactDust=this.impactDust.filter(dust=>!dust.update(dt));this.enemyFragments.forEach(f=>f.update(dt));this.enemyFragments=this.enemyFragments.filter(f=>!f.isOffscreen(this.world.distance));this.blockDebris=this.blockDebris.filter(d=>!d.update(dt,this.groundY));
