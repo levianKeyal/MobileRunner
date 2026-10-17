@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.62';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.62';
-import { ImpactDust } from './ImpactDust.js?v=0.10.62';
-import { PowerUp } from './PowerUp.js?v=0.10.62';
-import { DeathParticles } from './DeathParticles.js?v=0.10.62';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.62';
-import { Input } from './Input.js?v=0.10.62';
-import { Player } from './Player.js?v=0.10.62';
-import { World } from './World.js?v=0.10.62';
-import { Enemy } from './Enemy.js?v=0.10.62';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.62';
-import { AreaBoss } from './AreaBoss.js?v=0.10.62';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.63';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.63';
+import { ImpactDust } from './ImpactDust.js?v=0.10.63';
+import { PowerUp } from './PowerUp.js?v=0.10.63';
+import { DeathParticles } from './DeathParticles.js?v=0.10.63';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.63';
+import { Input } from './Input.js?v=0.10.63';
+import { Player } from './Player.js?v=0.10.63';
+import { World } from './World.js?v=0.10.63';
+import { Enemy } from './Enemy.js?v=0.10.63';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.63';
+import { AreaBoss } from './AreaBoss.js?v=0.10.63';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -292,6 +292,13 @@ export class Game {
  this.ctx.restore();
  }if(BOSS_TEST_MODE){this.ctx.save();this.ctx.textAlign='center';this.ctx.font='bold 15px system-ui';this.ctx.fillStyle='#fbbf24';this.ctx.fillText(this.bossLocked?'JEFE DE ÁREA · '+this.boss.health+'/50 HP':'PRUEBA DE JEFE · DERROTADOS: '+this.bossDefeated,this.width/2,Math.max(80,this.height*.14));this.ctx.restore();}document.getElementById('distance').textContent=`${Math.floor(this.world.distance/10)} m`;}
  updateDeathWorld(dt,shift){
+  // Keep the boss's current action, stomp animation, dust and projectiles alive after player death.
+  this.elapsedTime+=dt;
+  if(BOSS_TEST_MODE&&this.boss&&this.bossLocked){
+   const action=this.boss.update(dt);
+   if(action.stomp){this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size/2,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.15,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.85,this.groundY,2.5));}
+   if(action.shotY!==undefined){const x=this.boss.worldX-this.world.distance+this.boss.size/2-11;this.enemyBullets.push({x,y:action.shotY-7,width:22,height:14,speed:290,bossShot:true});}
+  }
   // Existing projectiles remain active, but can no longer damage anything.
   this.bullets=this.bullets.filter(b=>{b.x+=b.vx*dt-shift;b.y+=b.vy*dt;b.life-=dt;return b.life>0&&b.x+b.width>0&&b.x<this.width+30&&b.y+b.height>0&&b.y<this.height+30;});
   this.enemyBullets=this.enemyBullets.filter(b=>{b.x-=b.speed*dt+shift;return b.x+b.width>0;});
