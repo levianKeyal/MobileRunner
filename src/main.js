@@ -1,2 +1,2 @@
-import { Game } from './Game.js?v=0.10.60';
+import { Game } from './Game.js?v=0.10.61';
 new Game(document.getElementById('game'));
