@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.63';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.63';
-import { ImpactDust } from './ImpactDust.js?v=0.10.63';
-import { PowerUp } from './PowerUp.js?v=0.10.63';
-import { DeathParticles } from './DeathParticles.js?v=0.10.63';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.63';
-import { Input } from './Input.js?v=0.10.63';
-import { Player } from './Player.js?v=0.10.63';
-import { World } from './World.js?v=0.10.63';
-import { Enemy } from './Enemy.js?v=0.10.63';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.63';
-import { AreaBoss } from './AreaBoss.js?v=0.10.63';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.64';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.64';
+import { ImpactDust } from './ImpactDust.js?v=0.10.64';
+import { PowerUp } from './PowerUp.js?v=0.10.64';
+import { DeathParticles } from './DeathParticles.js?v=0.10.64';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.64';
+import { Input } from './Input.js?v=0.10.64';
+import { Player } from './Player.js?v=0.10.64';
+import { World } from './World.js?v=0.10.64';
+import { Enemy } from './Enemy.js?v=0.10.64';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.64';
+import { AreaBoss } from './AreaBoss.js?v=0.10.64';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -30,7 +30,7 @@ export class Game {
  readTutorialComplete(){try{return localStorage.getItem('mobileRunner.tutorialComplete')==='true';}catch{return false;}}
  finishTutorial(){this.tutorialComplete=true;try{localStorage.setItem('mobileRunner.tutorialComplete','true');}catch{}}
  loadStats(){try{const s=JSON.parse(localStorage.getItem('mobileRunner.stats')||'{}');return {maxKOs:Number(s.maxKOs)||0,maxMeters:Number(s.maxMeters)||0,deaths:Number(s.deaths)||0};}catch{return {maxKOs:0,maxMeters:0,deaths:0};}}
- die(){if(this.gameOver)return;this.gameOver=true;this.deathParticles=new DeathParticles(this.playerX,this.player.y,this.player.size,this.groundY);this.deathPhase='exploding';this.deathScrollElapsed=0;this.deathScrollStart=this.world.distance;this.deathScrollSpeed=this.world.speed;const meters=Math.floor(this.world.distance/10);this.stats.maxKOs=Math.max(this.stats.maxKOs,this.score);this.stats.maxMeters=Math.max(this.stats.maxMeters,meters);this.stats.deaths++;try{localStorage.setItem('mobileRunner.stats',JSON.stringify(this.stats));}catch{}document.getElementById('finalKOs').textContent=this.score;document.getElementById('maxKOs').textContent=this.stats.maxKOs;document.getElementById('finalMeters').textContent=meters+' m';document.getElementById('maxMeters').textContent=this.stats.maxMeters+' m';document.getElementById('totalDeaths').textContent=this.stats.deaths;document.getElementById('controls').hidden=true;this.input.consumeJump();this.input.clearShoot();}
+ die(){if(this.gameOver)return;if(this.boss&&this.bossLocked)this.boss.celebrateVictory();this.gameOver=true;this.deathParticles=new DeathParticles(this.playerX,this.player.y,this.player.size,this.groundY);this.deathPhase='exploding';this.deathScrollElapsed=0;this.deathScrollStart=this.world.distance;this.deathScrollSpeed=this.world.speed;const meters=Math.floor(this.world.distance/10);this.stats.maxKOs=Math.max(this.stats.maxKOs,this.score);this.stats.maxMeters=Math.max(this.stats.maxMeters,meters);this.stats.deaths++;try{localStorage.setItem('mobileRunner.stats',JSON.stringify(this.stats));}catch{}document.getElementById('finalKOs').textContent=this.score;document.getElementById('maxKOs').textContent=this.stats.maxKOs;document.getElementById('finalMeters').textContent=meters+' m';document.getElementById('maxMeters').textContent=this.stats.maxMeters+' m';document.getElementById('totalDeaths').textContent=this.stats.deaths;document.getElementById('controls').hidden=true;this.input.consumeJump();this.input.clearShoot();}
  restartTutorial(){this.forceTutorialOnce=true;this.reset();}
  reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.comboKills=0;this.comboDisplayTime=0;this.comboIdleTime=0;this.comboCountdown=false;this.comboCountdownValue=0;this.comboCountdownClock=0;this.comboZeroHold=0;this.screenShake=0;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=!COMBO_TEST_MODE&&!BOSS_TEST_MODE&&(this.forceTutorialOnce||!this.tutorialComplete);this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;this.postComboJumpCap=null;this.boss=null;this.bossLocked=false;this.bossDefeated=0;this.nextBossDistance=0;this.bossStun=0;this.bossComboGroup=null;this.bossComboIndex=0;this.bossComboTimer=3;this.bossComboCount=0;this.bossComboStaircase=false;this.nextFlyerX=this.width+950;this.nextFlyerBAt=this.width+1350;this.lastEnergySpawnTime=-Infinity;document.getElementById('score').textContent='0';this.lastTime=null;}
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
