@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.66';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.66';
-import { ImpactDust } from './ImpactDust.js?v=0.10.66';
-import { PowerUp } from './PowerUp.js?v=0.10.66';
-import { DeathParticles } from './DeathParticles.js?v=0.10.66';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.66';
-import { Input } from './Input.js?v=0.10.66';
-import { Player } from './Player.js?v=0.10.66';
-import { World } from './World.js?v=0.10.66';
-import { Enemy } from './Enemy.js?v=0.10.66';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.66';
-import { AreaBoss } from './AreaBoss.js?v=0.10.66';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.67';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.67';
+import { ImpactDust } from './ImpactDust.js?v=0.10.67';
+import { PowerUp } from './PowerUp.js?v=0.10.67';
+import { DeathParticles } from './DeathParticles.js?v=0.10.67';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.67';
+import { Input } from './Input.js?v=0.10.67';
+import { Player } from './Player.js?v=0.10.67';
+import { World } from './World.js?v=0.10.67';
+import { Enemy } from './Enemy.js?v=0.10.67';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.67';
+import { AreaBoss } from './AreaBoss.js?v=0.10.67';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=false; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -298,7 +298,7 @@ export class Game {
  this.ctx.strokeText(String(this.comboCountdown?this.comboCountdownValue:this.comboKills-1),0,0);
  this.ctx.fillText(String(this.comboCountdown?this.comboCountdownValue:this.comboKills-1),0,0);
  this.ctx.restore();
- }if(this.boss){this.ctx.save();this.ctx.textAlign='center';this.ctx.font='bold 15px system-ui';this.ctx.fillStyle='#fbbf24';this.ctx.fillText('JEFE DE ÁREA · '+this.boss.health+'/50 HP',this.width/2,Math.max(80,this.height*.14));this.ctx.restore();}document.getElementById('distance').textContent=`${Math.floor(this.world.distance/10)} m`;}
+ }document.getElementById('distance').textContent=`${Math.floor(this.world.distance/10)} m`;}
  updateDeathWorld(dt,shift){
   // Keep the boss's current action, stomp animation, dust and projectiles alive after player death.
   this.elapsedTime+=dt;
