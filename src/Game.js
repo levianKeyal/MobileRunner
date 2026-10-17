@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.67';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.67';
-import { ImpactDust } from './ImpactDust.js?v=0.10.67';
-import { PowerUp } from './PowerUp.js?v=0.10.67';
-import { DeathParticles } from './DeathParticles.js?v=0.10.67';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.67';
-import { Input } from './Input.js?v=0.10.67';
-import { Player } from './Player.js?v=0.10.67';
-import { World } from './World.js?v=0.10.67';
-import { Enemy } from './Enemy.js?v=0.10.67';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.67';
-import { AreaBoss } from './AreaBoss.js?v=0.10.67';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.68';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.68';
+import { ImpactDust } from './ImpactDust.js?v=0.10.68';
+import { PowerUp } from './PowerUp.js?v=0.10.68';
+import { DeathParticles } from './DeathParticles.js?v=0.10.68';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.68';
+import { Input } from './Input.js?v=0.10.68';
+import { Player } from './Player.js?v=0.10.68';
+import { World } from './World.js?v=0.10.68';
+import { Enemy } from './Enemy.js?v=0.10.68';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.68';
+import { AreaBoss } from './AreaBoss.js?v=0.10.68';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=false; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -165,7 +165,7 @@ export class Game {
  }
  spawnEnergy(dt){if(COMBO_TEST_MODE||this.tutorialMode)return;while(this.elapsedTime>=this.nextEnergyAt){this.energyItems.push(new PowerUp('energy',this.width+30,this.groundY,this.world.speed));this.lastEnergySpawnTime=this.elapsedTime;this.nextEnergyAt+=45+Math.random()*20-Math.min(5,Math.max(0,this.comboKills-1)*.2);}for(const item of this.energyItems)item.update(dt,this.groundY);this.energyItems=this.energyItems.filter(item=>item.x+item.size>-30);}
  receiveHit(){if(this.player.invulnerable>0)return;this.screenShake=.32;if(this.comboKills>=2){this.comboCountdown=true;this.comboCountdownValue=this.comboKills-1;this.comboCountdownClock=0;this.comboZeroHold=.65;this.comboDisplayTime=0;}else{this.comboKills=0;this.comboCountdown=false;}if(this.player.takeHit())this.die();}
- shoot(direction='right'){const now=performance.now();if(now-this.lastShotAt<1000/8)return;this.lastShotAt=now;const vectors={right:[1,0],left:[-1,0],up:[0,-1],down:[0,1]};const [dx,dy]=vectors[direction]||vectors.right;this.player.shoot();playPlayerShot();const vertical=dy!==0;const width=vertical?6:14;const height=vertical?14:6;const x=this.playerX+this.player.size/2-width/2+dx*(this.player.size/2+5);const y=this.player.y+this.player.size/2-height/2+dy*(this.player.size/2+5);const life=dx>0?Math.max(0,(this.width-x-width)*.8/750):.45;this.bullets.push({x,y,width,height,vx:dx*750,vy:dy*750,life});}
+ shoot(direction='right'){const now=performance.now();if(now-this.lastShotAt<1000/8)return;this.lastShotAt=now;const vectors={right:[1,0],left:[-1,0],up:[0,-1],down:[0,1],'up-right':[Math.SQRT1_2,-Math.SQRT1_2],'down-right':[Math.SQRT1_2,Math.SQRT1_2],'up-left':[-Math.SQRT1_2,-Math.SQRT1_2],'down-left':[-Math.SQRT1_2,Math.SQRT1_2]};const [dx,dy]=vectors[direction]||vectors.right;this.player.shoot();playPlayerShot();const vertical=dx===0;const width=vertical?6:14;const height=vertical?14:6;const x=this.playerX+this.player.size/2-width/2+dx*(this.player.size/2+5);const y=this.player.y+this.player.size/2-height/2+dy*(this.player.size/2+5);const life=dx>0?Math.max(0,(this.width-x-width)*.8/750):.45;this.bullets.push({x,y,width,height,vx:dx*750,vy:dy*750,life});}
  breakBlock(wall,tile){
   if(wall.breakTile(tile.row,tile.col)){this.blockDebris.push(new BlockDebris(tile));if(Math.random()<.05&&this.elapsedTime-this.lastEnergySpawnTime>7&&this.energyItems.length<3){const item=new PowerUp('energy',tile.x-this.world.distance,this.groundY,this.world.speed);item.y=tile.y;this.energyItems.push(item);this.lastEnergySpawnTime=this.elapsedTime;}return true;}
   return false;
