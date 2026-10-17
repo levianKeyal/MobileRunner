@@ -12,7 +12,7 @@ export class FlyingEnemy extends Enemy {
   this.direction=1;
   this.pause=0;
   this.flightSpeed=type==='flyA'?158:0;
-  this.groundY=groundY;
+  this.groundY=groundY;this.flightFloor=groundY-65;this.flightCeiling=groundY-255;
   this.flying=true;
  }
  update(dt,platforms=[]){
@@ -27,11 +27,11 @@ export class FlyingEnemy extends Enemy {
     safeY=Math.min(safeY,this.groundY-p.offset-this.size-12);
    }
    // Rise promptly before the wall; descend smoothly after passing it.
-   this.y+=Math.max(-420*dt,Math.min(180*dt,safeY-this.y));
+   this.y+=Math.max(-560*dt,Math.min(180*dt,safeY-this.y));
   }else{
    if(this.pause>0){this.pause-=dt;}
    else{
-    const upper=this.groundY-255,lower=this.groundY-65;
+    const upper=this.flightCeiling,lower=this.flightFloor;
     this.y+=this.direction*105*dt;
     if(this.y<=upper){this.y=upper;this.direction=1;this.pause=1.2;}
     if(this.y>=lower){this.y=lower;this.direction=-1;this.pause=1.2;}
