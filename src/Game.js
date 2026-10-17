@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.61';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.61';
-import { ImpactDust } from './ImpactDust.js?v=0.10.61';
-import { PowerUp } from './PowerUp.js?v=0.10.61';
-import { DeathParticles } from './DeathParticles.js?v=0.10.61';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.61';
-import { Input } from './Input.js?v=0.10.61';
-import { Player } from './Player.js?v=0.10.61';
-import { World } from './World.js?v=0.10.61';
-import { Enemy } from './Enemy.js?v=0.10.61';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.61';
-import { AreaBoss } from './AreaBoss.js?v=0.10.61';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.62';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.62';
+import { ImpactDust } from './ImpactDust.js?v=0.10.62';
+import { PowerUp } from './PowerUp.js?v=0.10.62';
+import { DeathParticles } from './DeathParticles.js?v=0.10.62';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.62';
+import { Input } from './Input.js?v=0.10.62';
+import { Player } from './Player.js?v=0.10.62';
+import { World } from './World.js?v=0.10.62';
+import { Enemy } from './Enemy.js?v=0.10.62';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.62';
+import { AreaBoss } from './AreaBoss.js?v=0.10.62';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
