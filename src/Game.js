@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.60';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.60';
-import { ImpactDust } from './ImpactDust.js?v=0.10.60';
-import { PowerUp } from './PowerUp.js?v=0.10.60';
-import { DeathParticles } from './DeathParticles.js?v=0.10.60';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.60';
-import { Input } from './Input.js?v=0.10.60';
-import { Player } from './Player.js?v=0.10.60';
-import { World } from './World.js?v=0.10.60';
-import { Enemy } from './Enemy.js?v=0.10.60';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.60';
-import { AreaBoss } from './AreaBoss.js?v=0.10.60';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.61';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.61';
+import { ImpactDust } from './ImpactDust.js?v=0.10.61';
+import { PowerUp } from './PowerUp.js?v=0.10.61';
+import { DeathParticles } from './DeathParticles.js?v=0.10.61';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.61';
+import { Input } from './Input.js?v=0.10.61';
+import { Player } from './Player.js?v=0.10.61';
+import { World } from './World.js?v=0.10.61';
+import { Enemy } from './Enemy.js?v=0.10.61';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.61';
+import { AreaBoss } from './AreaBoss.js?v=0.10.61';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -112,28 +112,26 @@ export class Game {
   }
  }
  spawnBossCombos(dt){
-  // During the boss test, only ground combo series spawn; no regular enemies or platforms.
+  // Spawn complete stomp series off the right edge, like the regular level.
+  // World scrolling brings each enemy into view at the usual combo spacing.
   if(!this.boss||!this.bossLocked)return;
   this.bossComboTimer-=dt;
   if(this.bossComboTimer>0)return;
-  if(this.bossComboIndex>=this.bossComboCount){
-   this.bossComboCount=3+Math.floor(Math.random()*3);
-   this.bossComboStaircase=Math.random()<.5;
-   this.bossComboIndex=0;
-   this.bossComboGroup={startX:0,started:false,bossSeries:true};
+  const count=3+Math.floor(Math.random()*3);
+  const staircase=Math.random()<.5;
+  const spacing=Math.round(this.world.speed*(2*570/1800)*.96);
+  const startX=this.world.distance+this.width+48;
+  const group={startX,started:false,bossSeries:true};
+  for(let i=0;i<count;i++){
+   const type=staircase&&i>0?'jumper':'basic';
+   const enemy=new Enemy(startX+i*spacing,0,type);
+   enemy.comboGroup=group;
+   enemy.comboIndex=i;
+   if(type==='jumper'){enemy.jumpHeight=48+i*21;enemy.jumpWait=Infinity;}
+   this.enemies.push(enemy);
   }
-  // Introduce one enemy at a time just left of the boss, preventing visual overlap.
-  const x=this.boss.worldX-this.boss.size*.12-36;
-  const index=this.bossComboIndex;
-  const type=this.bossComboStaircase&&index>0?'jumper':'basic';
-  const enemy=new Enemy(x,0,type);
-  enemy.comboGroup=this.bossComboGroup;
-  enemy.comboIndex=index;
-  if(index===0){this.bossComboGroup.startX=x;this.bossComboGroup.started=true;}
-  if(type==='jumper'){enemy.jumpHeight=48+index*21;enemy.jumpWait=.12;}
-  this.enemies.push(enemy);
-  this.bossComboIndex++;
-  this.bossComboTimer=this.bossComboIndex>=this.bossComboCount?3.5+Math.random()*2:.58;
+  // Reserve time for the full chain to enter and clear before another appears.
+  this.bossComboTimer=((count-1)*spacing+this.width*.65)/this.world.speed+1.2;
  }
  spawnFlyers(){
   if(BOSS_TEST_MODE)return;
