@@ -125,7 +125,15 @@ export class Game {
    const inCombo=this.enemies.some(e=>e.comboGroup&&Math.abs(e.worldX-x)<170);
    const solid=allPlatforms.some(p=>p.solid&&x+32>p.x-35&&x<p.x+p.width+35);
    const nearby=this.enemies.some(e=>Math.abs(e.worldX-x)<95);
-   if(!inCombo&&!solid&&!nearby)this.enemies.push(new FlyingEnemy(x,this.groundY,'flyB'));
+   if(!inCombo&&!solid&&!nearby){
+    const flyer=new FlyingEnemy(x,this.groundY,'flyB');
+    // Platform A is passable from below, but the hovering enemy must not overlap its deck.
+    const decks=allPlatforms.filter(p=>!p.solid&&x+flyer.size>p.x&&x<p.x+p.width);
+    for(const p of decks)flyer.flightFloor=Math.min(flyer.flightFloor,this.groundY-p.offset-flyer.size-12);
+    flyer.flightCeiling=Math.min(flyer.flightCeiling,flyer.flightFloor-90);
+    flyer.y=Math.min(flyer.y,flyer.flightFloor);
+    this.enemies.push(flyer);
+   }
    this.nextFlyerBAt+=900+Math.random()*650;
   }
  }
