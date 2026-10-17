@@ -31,8 +31,6 @@ export class AreaBoss {
   else if(face==='surprised'){ctx.fillRect(x+unit*2,this.y+unit*3,unit,unit);ctx.fillRect(x+unit*5,this.y+unit*3,unit,unit);ctx.beginPath();ctx.ellipse(x+unit*4,this.y+unit*5.4,unit*.75,unit,0,0,Math.PI*2);ctx.fill();}
   else if(face==='angry'){ctx.fillRect(x+unit*2,this.y+unit*3,unit,unit*.65);ctx.fillRect(x+unit*5,this.y+unit*3,unit,unit*.65);ctx.strokeStyle='#0f172a';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x+unit*2,this.y+unit*2.3);ctx.lineTo(x+unit*3.3,this.y+unit*3);ctx.moveTo(x+unit*6,this.y+unit*2.3);ctx.lineTo(x+unit*4.7,this.y+unit*3);ctx.stroke();ctx.fillRect(x+unit*3,this.y+unit*5.3,unit*2,unit*.5);}
   else{const blink=Math.sin(performance.now()*.003)>.98;ctx.fillRect(x+unit*2,this.y+unit*3,unit,blink?2:unit);ctx.fillRect(x+unit*5,this.y+unit*3,unit,blink?2:unit);ctx.fillRect(x+unit*3,this.y+unit*5,unit*2,unit*.5);}
-  ctx.fillStyle='#020617';ctx.fillRect(x,this.y-16,this.size,9);
-  ctx.fillStyle='#fbbf24';ctx.fillRect(x,this.y-16,this.size*(this.health/this.maxHealth),9);
   ctx.restore();
  }
 }
