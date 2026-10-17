@@ -23,7 +23,8 @@ export class Input {
   const shoot=document.getElementById('shoot');
   const canvas=shoot.querySelector('.shoot-visual');
   const ctx=canvas.getContext('2d');
-  const angles={right:[-Math.PI/4,Math.PI/4],down:[Math.PI/4,3*Math.PI/4],left:[3*Math.PI/4,5*Math.PI/4],up:[5*Math.PI/4,7*Math.PI/4]};
+  const directions=['right','down-right','down','down-left','left','up-left','up','up-right'];
+  const angles=Object.fromEntries(directions.map((direction,i)=>[direction,[(i-.5)*Math.PI/4,(i+.5)*Math.PI/4]]));
   const draw=direction=>{
    const size=canvas.width,mid=size/2;
    ctx.clearRect(0,0,size,size);
@@ -41,7 +42,8 @@ export class Input {
    const r=shoot.getBoundingClientRect();
    const x=(e.clientX-r.left)/r.width-.5;
    const y=(e.clientY-r.top)/r.height-.5;
-   return Math.abs(x)>=Math.abs(y)?(x>=0?'right':'left'):(y>=0?'down':'up');
+   const sector=(Math.round(Math.atan2(y,x)/(Math.PI/4))+8)%8;
+   return directions[sector];
   };
   const selectDirection=e=>{
    const direction=directionAt(e);
