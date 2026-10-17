@@ -12,11 +12,11 @@ export class EnemyFragments {
   const bossColors=['#ef4444','#22c55e','#2563eb','#fbbf24','#a855f7','#06b6d4','#f97316','#ec4899','#ffffff','#84cc16','#f8fafc'];
   this.fragments=Array.from({length:boss?90:18},(_,i)=>{
    const angle=Math.random()*Math.PI*2;
-   const speed=boss?130+Math.random()*390:100+Math.random()*225;
+   const speed=boss?75+Math.random()*205:100+Math.random()*225;
    return {x:enemy.worldX+Math.random()*enemy.size,y:top+Math.random()*enemy.size,
-    vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-75,
+    vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-(boss?35:75),
     size:boss?4+Math.random()*9:3+Math.random()*5,angle:Math.random()*Math.PI*2,
-    spin:(Math.random()-.5)*11,color:boss?bossColors[i%bossColors.length]:i%6===0?accents[i%accents.length]:i%5===0?'#ffffff':base,rest:false};
+    spin:(Math.random()-.5)*(boss?6:11),color:boss?bossColors[i%bossColors.length]:i%6===0?accents[i%accents.length]:i%5===0?'#ffffff':base,rest:false};
   });
  }
  update(dt){
