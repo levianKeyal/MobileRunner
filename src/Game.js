@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.53';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.53';
-import { ImpactDust } from './ImpactDust.js?v=0.10.53';
-import { PowerUp } from './PowerUp.js?v=0.10.53';
-import { DeathParticles } from './DeathParticles.js?v=0.10.53';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.53';
-import { Input } from './Input.js?v=0.10.53';
-import { Player } from './Player.js?v=0.10.53';
-import { World } from './World.js?v=0.10.53';
-import { Enemy } from './Enemy.js?v=0.10.53';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.53';
-import { AreaBoss } from './AreaBoss.js?v=0.10.53';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.54';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.54';
+import { ImpactDust } from './ImpactDust.js?v=0.10.54';
+import { PowerUp } from './PowerUp.js?v=0.10.54';
+import { DeathParticles } from './DeathParticles.js?v=0.10.54';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.54';
+import { Input } from './Input.js?v=0.10.54';
+import { Player } from './Player.js?v=0.10.54';
+import { World } from './World.js?v=0.10.54';
+import { Enemy } from './Enemy.js?v=0.10.54';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.54';
+import { AreaBoss } from './AreaBoss.js?v=0.10.54';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -182,10 +182,10 @@ export class Game {
    this.boss=new AreaBoss(this.world.distance+this.width+30,this.groundY,this.player.size);
    this.bossLocked=false;
   }
-  if(this.boss&&!this.bossLocked&&this.boss.worldX-this.world.distance<=this.width*.68){
+  if(this.boss&&!this.bossLocked&&this.boss.worldX-this.world.distance<=this.width*.50){
    this.bossLocked=true;
   }
-  if(this.boss&&this.bossLocked)this.boss.worldX=this.world.distance+this.width*.68;
+  if(this.boss&&this.bossLocked)this.boss.worldX=this.world.distance+this.width*.50;
  }
  update(dt){if(this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(BOSS_TEST_MODE)this.updateBoss(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();if(!this.tutorialMode)this.spawnFlyers();for(const enemy of this.enemies){
   if(enemy.comboGroup&&!enemy.comboGroup.started&&enemy.comboGroup.startX-this.world.distance<=this.playerX+70){enemy.comboGroup.started=true;for(const e of this.enemies)if(e.comboGroup===enemy.comboGroup)e.jumpWait=e.comboIndex*.61+.12;}
