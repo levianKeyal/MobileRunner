@@ -182,10 +182,10 @@ export class Game {
    this.boss=new AreaBoss(this.world.distance+this.width+30,this.groundY,this.player.size);
    this.bossLocked=false;
   }
-  if(this.boss&&!this.bossLocked&&this.boss.worldX-this.world.distance+this.boss.size<=this.width-12){
+  if(this.boss&&!this.bossLocked&&this.boss.worldX-this.world.distance<=this.width*.68){
    this.bossLocked=true;
   }
-  if(this.boss&&this.bossLocked)this.boss.worldX=this.world.distance+this.width-12-this.boss.size;
+  if(this.boss&&this.bossLocked)this.boss.worldX=this.world.distance+this.width*.68;
  }
  update(dt){if(this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(BOSS_TEST_MODE)this.updateBoss(dt);if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();if(!this.tutorialMode)this.spawnFlyers();for(const enemy of this.enemies){
   if(enemy.comboGroup&&!enemy.comboGroup.started&&enemy.comboGroup.startX-this.world.distance<=this.playerX+70){enemy.comboGroup.started=true;for(const e of this.enemies)if(e.comboGroup===enemy.comboGroup)e.jumpWait=e.comboIndex*.61+.12;}
