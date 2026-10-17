@@ -1,15 +1,15 @@
-import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.59';
-import { EnemyFragments } from './EnemyFragments.js?v=0.10.59';
-import { ImpactDust } from './ImpactDust.js?v=0.10.59';
-import { PowerUp } from './PowerUp.js?v=0.10.59';
-import { DeathParticles } from './DeathParticles.js?v=0.10.59';
-import { playPlayerShot } from './SoundEffects.js?v=0.10.59';
-import { Input } from './Input.js?v=0.10.59';
-import { Player } from './Player.js?v=0.10.59';
-import { World } from './World.js?v=0.10.59';
-import { Enemy } from './Enemy.js?v=0.10.59';
-import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.59';
-import { AreaBoss } from './AreaBoss.js?v=0.10.59';
+import { BreakablePlatform, BlockDebris } from './BreakablePlatform.js?v=0.10.60';
+import { EnemyFragments } from './EnemyFragments.js?v=0.10.60';
+import { ImpactDust } from './ImpactDust.js?v=0.10.60';
+import { PowerUp } from './PowerUp.js?v=0.10.60';
+import { DeathParticles } from './DeathParticles.js?v=0.10.60';
+import { playPlayerShot } from './SoundEffects.js?v=0.10.60';
+import { Input } from './Input.js?v=0.10.60';
+import { Player } from './Player.js?v=0.10.60';
+import { World } from './World.js?v=0.10.60';
+import { Enemy } from './Enemy.js?v=0.10.60';
+import { FlyingEnemy } from './FlyingEnemy.js?v=0.10.60';
+import { AreaBoss } from './AreaBoss.js?v=0.10.60';
 const COMBO_TEST_MODE=false;
 const BOSS_TEST_MODE=true; // Temporary boss-only test. Set false for the normal level. // Temporary stomp-combo test level. Set false to restore normal gameplay.
 const intersects=(a,b)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
@@ -32,7 +32,7 @@ export class Game {
  loadStats(){try{const s=JSON.parse(localStorage.getItem('mobileRunner.stats')||'{}');return {maxKOs:Number(s.maxKOs)||0,maxMeters:Number(s.maxMeters)||0,deaths:Number(s.deaths)||0};}catch{return {maxKOs:0,maxMeters:0,deaths:0};}}
  die(){if(this.gameOver)return;this.gameOver=true;this.deathParticles=new DeathParticles(this.playerX,this.player.y,this.player.size,this.groundY);this.deathPhase='exploding';this.deathScrollElapsed=0;this.deathScrollStart=this.world.distance;this.deathScrollSpeed=this.world.speed;const meters=Math.floor(this.world.distance/10);this.stats.maxKOs=Math.max(this.stats.maxKOs,this.score);this.stats.maxMeters=Math.max(this.stats.maxMeters,meters);this.stats.deaths++;try{localStorage.setItem('mobileRunner.stats',JSON.stringify(this.stats));}catch{}document.getElementById('finalKOs').textContent=this.score;document.getElementById('maxKOs').textContent=this.stats.maxKOs;document.getElementById('finalMeters').textContent=meters+' m';document.getElementById('maxMeters').textContent=this.stats.maxMeters+' m';document.getElementById('totalDeaths').textContent=this.stats.deaths;document.getElementById('controls').hidden=true;this.input.consumeJump();this.input.clearShoot();}
  restartTutorial(){this.forceTutorialOnce=true;this.reset();}
- reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.comboKills=0;this.comboDisplayTime=0;this.comboIdleTime=0;this.comboCountdown=false;this.comboCountdownValue=0;this.comboCountdownClock=0;this.comboZeroHold=0;this.screenShake=0;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=!COMBO_TEST_MODE&&!BOSS_TEST_MODE&&(this.forceTutorialOnce||!this.tutorialComplete);this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;this.postComboJumpCap=null;this.boss=null;this.bossLocked=false;this.bossDefeated=0;this.nextBossDistance=0;this.bossStun=0;this.nextFlyerX=this.width+950;this.nextFlyerBAt=this.width+1350;this.lastEnergySpawnTime=-Infinity;document.getElementById('score').textContent='0';this.lastTime=null;}
+ reset(){this.paused=false;document.getElementById('pausePanel').hidden=true;this.gameOver=false;this.deathParticles=null;this.deathPhase=null;this.deathScrollElapsed=0;this.lastShotAt=-Infinity;document.getElementById('results').classList.remove('visible');document.getElementById('results').hidden=true;document.getElementById('controls').hidden=false;this.input.consumeJump();this.input.clearShoot();this.runtimeError=null;document.getElementById('runtimeError')?.remove();this.player=new Player();this.player.reset(this.groundY);this.world=new World(Math.floor(Math.random()*4294967295));this.bullets=[];this.enemyBullets=[];this.enemies=[];this.platforms=[];this.energyItems=[];this.impactDust=[];this.enemyFragments=[];this.blockDebris=[];this.jumpApexY=this.player.y;this.comboKills=0;this.comboDisplayTime=0;this.comboIdleTime=0;this.comboCountdown=false;this.comboCountdownValue=0;this.comboCountdownClock=0;this.comboZeroHold=0;this.screenShake=0;this.nextEnergyAt=45;this.score=0;this.elapsedTime=0;this.playerX=Math.round(this.width*.25);this.recoveryDuration=2;this.recoveryElapsed=0;this.recoveryStartX=this.playerX;this.recovering=false;this.tutorialMode=!COMBO_TEST_MODE&&!BOSS_TEST_MODE&&(this.forceTutorialOnce||!this.tutorialComplete);this.forceTutorialOnce=false;this.tutorialWalls=[];this.tutorialFinishX=Infinity;if(this.tutorialMode){const start=20*this.world.speed+this.width+170;this.tutorialWalls=[{x:start,width:86,offset:76,solid:true},{x:start+650,width:90,offset:186,solid:true}];this.tutorialFinishX=start+650+90;}this.nextPlatformX=Math.max(this.width+170,540);this.nextEnemyX=Math.max(this.width+160,500);this.nextComboAt=this.nextEnemyX+900+Math.random()*500;this.postComboJumpCap=null;this.boss=null;this.bossLocked=false;this.bossDefeated=0;this.nextBossDistance=0;this.bossStun=0;this.bossComboGroup=null;this.bossComboIndex=0;this.bossComboTimer=3;this.bossComboCount=0;this.bossComboStaircase=false;this.nextFlyerX=this.width+950;this.nextFlyerBAt=this.width+1350;this.lastEnergySpawnTime=-Infinity;document.getElementById('score').textContent='0';this.lastTime=null;}
  platformLevels(){const jumpHeight=680*680/(2*1800);return [Math.round(jumpHeight*.56),Math.round(jumpHeight*1.52)];}
  spawnPlatforms(){if(BOSS_TEST_MODE||COMBO_TEST_MODE||this.tutorialMode)return;/* Generate terrain beyond the longest possible combo before checking enemy positions. */const ahead=this.world.distance+this.width+700;const levels=this.platformLevels();while(this.nextPlatformX<ahead){const width=Math.random()<.23?420+Math.random()*180:145+Math.random()*100;const offset=levels[Math.random()<.65?0:1];if(Math.random()<.28){
   const columns=3+Math.floor(Math.random()*3);
@@ -111,6 +111,30 @@ export class Game {
    this.nextEnemyX+=110+Math.random()*180;
   }
  }
+ spawnBossCombos(dt){
+  // During the boss test, only ground combo series spawn; no regular enemies or platforms.
+  if(!this.boss||!this.bossLocked)return;
+  this.bossComboTimer-=dt;
+  if(this.bossComboTimer>0)return;
+  if(this.bossComboIndex>=this.bossComboCount){
+   this.bossComboCount=3+Math.floor(Math.random()*3);
+   this.bossComboStaircase=Math.random()<.5;
+   this.bossComboIndex=0;
+   this.bossComboGroup={startX:0,started:false,bossSeries:true};
+  }
+  // Introduce one enemy at a time just left of the boss, preventing visual overlap.
+  const x=this.boss.worldX-this.boss.size*.12-36;
+  const index=this.bossComboIndex;
+  const type=this.bossComboStaircase&&index>0?'jumper':'basic';
+  const enemy=new Enemy(x,0,type);
+  enemy.comboGroup=this.bossComboGroup;
+  enemy.comboIndex=index;
+  if(index===0){this.bossComboGroup.startX=x;this.bossComboGroup.started=true;}
+  if(type==='jumper'){enemy.jumpHeight=48+index*21;enemy.jumpWait=.12;}
+  this.enemies.push(enemy);
+  this.bossComboIndex++;
+  this.bossComboTimer=this.bossComboIndex>=this.bossComboCount?3.5+Math.random()*2:.58;
+ }
  spawnFlyers(){
   if(BOSS_TEST_MODE)return;
   const ahead=this.world.distance+this.width+100;
@@ -187,7 +211,7 @@ export class Game {
   }
   if(this.boss&&this.bossLocked)this.boss.worldX=this.world.distance+this.width*.75-this.boss.size/2;
  }
- update(dt){this.bossStun=Math.max(0,this.bossStun-dt);if(this.bossStun>0){this.input.consumeJump();this.input.clearShoot();}if(this.bossStun<=0&&this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))if(this.bossStun<=0)this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(BOSS_TEST_MODE){this.updateBoss(dt);if(this.boss&&this.bossLocked){const action=this.boss.update(dt);if(action.stomp){this.screenShake=.35;this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size/2,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.15,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.85,this.groundY,2.5));if(this.player.grounded){this.bossStun=1.5;this.input.consumeJump();this.input.clearShoot();}}if(action.shotY!==undefined){const x=this.boss.worldX-this.world.distance+this.boss.size/2-11;this.enemyBullets.push({x,y:action.shotY-7,width:22,height:14,speed:290,bossShot:true});}}}if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();if(!this.tutorialMode)this.spawnFlyers();for(const enemy of this.enemies){
+ update(dt){this.bossStun=Math.max(0,this.bossStun-dt);if(this.bossStun>0){this.input.consumeJump();this.input.clearShoot();}if(this.bossStun<=0&&this.input.consumeJump()){if(this.player.stompChainReady){this.player.startStomp();}else if(this.player.jump())this.jumpApexY=this.player.y;else this.player.startStomp();}this.player.setJumpHeld(this.input.jumpHeld);let shootDirection;while((shootDirection=this.input.consumeShoot()))if(this.bossStun<=0)this.shoot(shootDirection);this.elapsedTime+=dt;this.comboDisplayTime=Math.max(0,this.comboDisplayTime-dt);if(this.comboCountdown){if(this.comboCountdownValue===0){this.comboZeroHold-=dt;if(this.comboZeroHold<=0){this.comboCountdown=false;this.comboKills=0;this.comboDisplayTime=0;}}else{this.comboCountdownClock+=dt;while(this.comboCountdownClock>=.085&&this.comboCountdownValue>0){this.comboCountdownClock-=.085;this.comboCountdownValue--;if(this.comboCountdownValue===0)this.comboZeroHold=.65;}}}this.world.update(dt);if(BOSS_TEST_MODE){this.updateBoss(dt);if(this.boss&&this.bossLocked){const action=this.boss.update(dt);if(action.stomp){this.screenShake=.35;this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size/2,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.15,this.groundY,2.5));this.impactDust.push(new ImpactDust(this.boss.worldX+this.boss.size*.85,this.groundY,2.5));if(this.player.grounded){this.bossStun=1.5;this.input.consumeJump();this.input.clearShoot();}}if(action.shotY!==undefined){const x=this.boss.worldX-this.world.distance+this.boss.size/2-11;this.enemyBullets.push({x,y:action.shotY-7,width:22,height:14,speed:290,bossShot:true});}}}if(this.tutorialMode&&this.elapsedTime>=20){this.enemies=[];this.enemyBullets=[];}this.spawnPlatforms();this.tutorialWalls=this.tutorialWalls.filter(p=>p.x+p.width>this.world.distance);this.spawnEnergy(dt);if(BOSS_TEST_MODE)this.spawnBossCombos(dt);if(!this.tutorialMode||this.elapsedTime<20)this.spawnEnemies();if(!this.tutorialMode)this.spawnFlyers();for(const enemy of this.enemies){
   if(enemy.comboGroup&&!enemy.comboGroup.started&&enemy.comboGroup.startX-this.world.distance<=this.playerX+70){enemy.comboGroup.started=true;for(const e of this.enemies)if(e.comboGroup===enemy.comboGroup)e.jumpWait=e.comboIndex*.61+.12;}
   if(enemy.update(dt,enemy.flying?this.platforms:undefined))this.impactDust.push(new ImpactDust(enemy.worldX+enemy.size/2,this.groundY-enemy.surfaceOffset));
  }
@@ -244,7 +268,7 @@ export class Game {
   if(intersects(swept,box)){
    if(this.boss.hit()){
     this.enemyFragments.push(new EnemyFragments(this.boss,this.groundY));
-    this.boss=null;this.bossLocked=false;this.bossDefeated++;
+    this.boss=null;this.bossLocked=false;this.bossDefeated++;this.bossComboGroup=null;this.bossComboIndex=0;this.bossComboCount=0;this.bossComboTimer=3;this.enemies=[];
     this.nextBossDistance=this.world.distance+350;
    }
    continue;
