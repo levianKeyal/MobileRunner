@@ -5,16 +5,18 @@ export class EnemyFragments {
   this.worldX=enemy.worldX;
   this.size=enemy.size;
   this.age=0;
+  const boss=enemy.isBoss===true;
   const base=(enemy.type==='shooter'||enemy.type==='burst'||enemy.type==='flyB')?'#38bdf8':'#ef4444';
   const accents=enemy.type==='burst'?['#b91c1c','#f87171']:enemy.type==='jumper'?['#2563eb','#93c5fd']:[base,'#ffffff'];
-  const top=enemy.flying?enemy.y:groundY-enemy.surfaceOffset-enemy.size-enemy.jumpOffset;
-  this.fragments=Array.from({length:18},(_,i)=>{
+  const top=boss?enemy.y:enemy.flying?enemy.y:groundY-enemy.surfaceOffset-enemy.size-enemy.jumpOffset;
+  const bossColors=['#ef4444','#22c55e','#2563eb','#fbbf24','#a855f7','#06b6d4','#f97316','#ec4899','#ffffff','#84cc16','#f8fafc'];
+  this.fragments=Array.from({length:boss?90:18},(_,i)=>{
    const angle=Math.random()*Math.PI*2;
-   const speed=100+Math.random()*225;
+   const speed=boss?130+Math.random()*390:100+Math.random()*225;
    return {x:enemy.worldX+Math.random()*enemy.size,y:top+Math.random()*enemy.size,
     vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed-75,
-    size:3+Math.random()*5,angle:Math.random()*Math.PI*2,
-    spin:(Math.random()-.5)*11,color:i%6===0?accents[i%accents.length]:i%5===0?'#ffffff':base,rest:false};
+    size:boss?4+Math.random()*9:3+Math.random()*5,angle:Math.random()*Math.PI*2,
+    spin:(Math.random()-.5)*11,color:boss?bossColors[i%bossColors.length]:i%6===0?accents[i%accents.length]:i%5===0?'#ffffff':base,rest:false};
   });
  }
  update(dt){
