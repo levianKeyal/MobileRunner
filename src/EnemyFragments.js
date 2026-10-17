@@ -5,9 +5,9 @@ export class EnemyFragments {
   this.worldX=enemy.worldX;
   this.size=enemy.size;
   this.age=0;
-  const base=(enemy.type==='shooter'||enemy.type==='burst')?'#38bdf8':'#ef4444';
+  const base=(enemy.type==='shooter'||enemy.type==='burst'||enemy.type==='flyB')?'#38bdf8':'#ef4444';
   const accents=enemy.type==='burst'?['#b91c1c','#f87171']:enemy.type==='jumper'?['#2563eb','#93c5fd']:[base,'#ffffff'];
-  const top=groundY-enemy.surfaceOffset-enemy.size-enemy.jumpOffset;
+  const top=enemy.flying?enemy.y:groundY-enemy.surfaceOffset-enemy.size-enemy.jumpOffset;
   this.fragments=Array.from({length:18},(_,i)=>{
    const angle=Math.random()*Math.PI*2;
    const speed=100+Math.random()*225;
