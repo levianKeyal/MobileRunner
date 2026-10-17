@@ -11,7 +11,7 @@ export class FlyingEnemy extends Enemy {
   this.time=0;
   this.direction=1;
   this.pause=0;
-  this.flightSpeed=type==='flyA'?158:0;
+  this.flightSpeed=type==='flyA'?45:0;
   this.groundY=groundY;this.flightFloor=groundY-65;this.flightCeiling=groundY-255;
   this.flying=true;
  }
